@@ -67,16 +67,37 @@
     }
 
     .game-item {
-      will-change: transform, top, left;
+      position: absolute;
+      z-index: 10;
+      will-change: transform;
+      transform: translate3d(-50%, -50%, 0);
+      backface-visibility: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08));
+      user-select: none;
+      pointer-events: none;
+      line-height: 1;
     }
 
     .player-monkey {
-      transition: left 0.1s linear;
+      transition: left 0.08s linear;
+      will-change: left;
     }
 
     .glass {
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
+    }
+
+    .mobile-hint-hide {
+      opacity: 0 !important;
+      transform: translate(-50%, 10px) !important;
+      pointer-events: none;
+    }
+
+    #mobileGameHint {
+      transition: opacity 0.35s ease, transform 0.35s ease;
     }
   </style>
 </head>
@@ -103,11 +124,11 @@
     ];
 
     const memoryCards = [
-      { title: "Anı Kartı 1", className: "from-rose-100 to-pink-50 border-rose-100 text-rose-400", image: "photos/ani1.jpg.jpg" },
-      { title: "Anı Kartı 2", className: "from-pink-100 to-rose-50 border-pink-100 text-pink-400", image: "photos/ani2.jpg.jpg" },
-      { title: "Anı Kartı 3", className: "from-red-100 to-white border-rose-100 text-red-400", image: "photos/ani3.jpg.jpg" },
-      { title: "Anı Kartı 4", className: "from-rose-50 to-pink-100 border-rose-100 text-rose-400", image: "photos/ani4.jpg.jpg" },
-      { title: "Anı Kartı 5", className: "from-fuchsia-50 to-rose-100 border-fuchsia-100 text-fuchsia-400", image: "photos/ani5.jpg.jpg" }
+      { title: "Anı Kartı 1", className: "from-rose-100 to-pink-50 border-rose-100 text-rose-400", image: "photos/ani1.jpg" },
+      { title: "Anı Kartı 2", className: "from-pink-100 to-rose-50 border-pink-100 text-pink-400", image: "photos/ani2.jpg" },
+      { title: "Anı Kartı 3", className: "from-red-100 to-white border-rose-100 text-red-400", image: "photos/ani3.jpg" },
+      { title: "Anı Kartı 4", className: "from-rose-50 to-pink-100 border-rose-100 text-rose-400", image: "photos/ani4.jpg" },
+      { title: "Anı Kartı 5", className: "from-fuchsia-50 to-rose-100 border-fuchsia-100 text-fuchsia-400", image: "photos/ani5.jpg" }
     ];
 
     const timelineItems = [
@@ -144,14 +165,14 @@
     ];
 
     const initialGameItems = [
-      { id: 1, x: 12, y: 2, type: "banana", speed: 1.2 },
-      { id: 2, x: 32, y: 20, type: "banana", speed: 1.35 },
-      { id: 3, x: 56, y: 10, type: "bad", speed: 1.1 },
-      { id: 4, x: 72, y: 28, type: "banana", speed: 1.3 },
-      { id: 5, x: 84, y: 14, type: "bad", speed: 1.45 }
+      { id: 1, x: 12, y: 2, type: "banana", speed: 20 },
+      { id: 2, x: 32, y: 20, type: "banana", speed: 22 },
+      { id: 3, x: 56, y: 10, type: "bad", speed: 19 },
+      { id: 4, x: 72, y: 28, type: "banana", speed: 21 },
+      { id: 5, x: 84, y: 14, type: "bad", speed: 23 }
     ];
 
-    const heroImageUrl = "photos/kapak.jpg.jpg";
+    const heroImageUrl = "photos/kapak.jpg";
 
     function getGameMessage(score) {
       if (score === 0) return "Minik maymunum için muzları topla 🍌";
@@ -216,7 +237,9 @@
         clampPlayerX(100) === 92,
         toneClasses("rose").dot.includes("rose"),
         toneClasses("pink").card.includes("bg-pink-50"),
-        toneClasses("slate").dot.includes("gray")
+        toneClasses("slate").dot.includes("gray"),
+        heroImageUrl === "photos/kapak.jpg",
+        memoryCards[0].image === "photos/ani1.jpg"
       ];
 
       if (checks.some((x) => !x)) {
@@ -538,7 +561,10 @@
                       </div>
                     </div>
 
-                    <div class="absolute left-1/2 -translate-x-1/2 bottom-4 md:hidden rounded-full bg-white/85 px-4 py-2 text-xs font-semibold text-rose-500 shadow z-10">
+                    <div
+                      id="mobileGameHint"
+                      class="absolute left-1/2 -translate-x-1/2 bottom-4 md:hidden rounded-full bg-white/85 px-4 py-2 text-xs font-semibold text-rose-500 shadow z-10"
+                    >
                       Basılı tutup sağa sola sürükle
                     </div>
 
@@ -688,6 +714,7 @@
       const scoreValue = document.getElementById("scoreValue");
       const gameMessage = document.getElementById("gameMessage");
       const resetGameBtn = document.getElementById("resetGameBtn");
+      const mobileGameHint = document.getElementById("mobileGameHint");
 
       let playerX = 50;
       let score = 0;
@@ -695,24 +722,51 @@
       let isWon = false;
       let isDragging = false;
       let isMouseInside = false;
-      let items = initialGameItems.map((item) => ({ ...item }));
+      let hasStartedDragging = false;
+      let animationFrameId = null;
+      let lastTime = 0;
 
-      function renderItems() {
-        itemsLayer.innerHTML = items.map((item) => `
-          <div
-            class="absolute text-3xl z-10 game-item"
-            style="left:${item.x}%; top:${item.y}%; transform:translate(-50%, -50%);"
-          >
-            ${item.type === "banana" ? "🍌" : "💔"}
-          </div>
-        `).join("");
+      let items = initialGameItems.map((item) => ({ ...item, el: null }));
+
+      function randomItemType() {
+        return Math.random() > 0.35 ? "banana" : "bad";
       }
 
-      function renderGame() {
+      function randomSpeed() {
+        return 18 + Math.random() * 10;
+      }
+
+      function hideMobileHint() {
+        if (!mobileGameHint || hasStartedDragging) return;
+        hasStartedDragging = true;
+        mobileGameHint.classList.add("mobile-hint-hide");
+      }
+
+      function createItems() {
+        itemsLayer.innerHTML = "";
+
+        items.forEach((item) => {
+          const el = document.createElement("div");
+          el.className = "game-item text-3xl";
+          el.textContent = item.type === "banana" ? "🍌" : "💔";
+          item.el = el;
+          itemsLayer.appendChild(el);
+          updateItemElement(item);
+        });
+      }
+
+      function updateItemElement(item) {
+        if (!item.el) return;
+        item.el.style.left = `${item.x}%`;
+        item.el.style.top = `${item.y}%`;
+        item.el.style.transform = "translate3d(-50%, -50%, 0)";
+        item.el.textContent = item.type === "banana" ? "🍌" : "💔";
+      }
+
+      function renderHUD() {
         playerMonkey.style.left = `${playerX}%`;
         scoreValue.textContent = `${score} / 20`;
         gameMessage.textContent = message;
-        renderItems();
 
         if (isWon) {
           playerMonkey.style.display = "none";
@@ -732,6 +786,14 @@
         playerMonkey.style.left = `${playerX}%`;
       }
 
+      function respawnItem(item) {
+        item.y = -8;
+        item.x = 8 + Math.random() * 84;
+        item.type = randomItemType();
+        item.speed = randomSpeed();
+        updateItemElement(item);
+      }
+
       function resetGame() {
         playerX = 50;
         score = 0;
@@ -739,60 +801,77 @@
         isWon = false;
         isDragging = false;
         isMouseInside = false;
-        items = initialGameItems.map((item) => ({ ...item }));
-        renderGame();
+        hasStartedDragging = false;
+        lastTime = 0;
+
+        if (mobileGameHint) {
+          mobileGameHint.classList.remove("mobile-hint-hide");
+        }
+
+        items = initialGameItems.map((item) => ({
+          ...item,
+          el: null
+        }));
+
+        createItems();
+        renderHUD();
+
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        animationFrameId = requestAnimationFrame(loop);
       }
 
-      function tick() {
+      function tick(deltaSec) {
         if (isWon) return;
 
-        items = items.map((item) => {
-          let nextY = item.y + item.speed * 2;
-          let nextX = item.x;
-          let nextType = item.type;
-          let nextSpeed = item.speed;
+        items.forEach((item) => {
+          item.y += item.speed * deltaSec;
 
-          if (nextY >= 88) {
-            nextY = -8;
-            nextX = 8 + Math.random() * 84;
-            nextType = Math.random() > 0.35 ? "banana" : "bad";
-            nextSpeed = 1 + Math.random() * 0.8;
+          if (item.y >= 88) {
+            respawnItem(item);
+            return;
           }
 
-          const caught = nextY >= 74 && nextY <= 92 && Math.abs(nextX - playerX) < 10;
+          const caught = item.y >= 74 && item.y <= 92 && Math.abs(item.x - playerX) < 10;
 
           if (caught) {
-            if (nextType === "banana") {
+            if (item.type === "banana") {
               score = Math.min(20, score + 1);
               message = getGameMessage(score);
-              if (score >= 20) isWon = true;
+
+              if (score >= 20) {
+                isWon = true;
+              }
             } else {
               score = Math.max(0, score - 1);
               message = score === 0 ? "Dikkat et, kötü şeylere çarpma 💔" : getGameMessage(score);
             }
 
-            return {
-              ...item,
-              y: -10,
-              x: 8 + Math.random() * 84,
-              type: Math.random() > 0.35 ? "banana" : "bad",
-              speed: 1 + Math.random() * 0.8
-            };
+            respawnItem(item);
+            renderHUD();
+            return;
           }
 
-          return {
-            ...item,
-            y: nextY,
-            x: nextX,
-            type: nextType,
-            speed: nextSpeed
-          };
+          updateItemElement(item);
         });
 
-        renderGame();
+        renderHUD();
+      }
+
+      function loop(now) {
+        if (!lastTime) lastTime = now;
+        const deltaSec = Math.min((now - lastTime) / 1000, 0.03);
+        lastTime = now;
+
+        tick(deltaSec);
+
+        if (!isWon) {
+          animationFrameId = requestAnimationFrame(loop);
+        }
       }
 
       window.addEventListener("keydown", (e) => {
+        if (isWon) return;
+
         if (e.key === "ArrowLeft") {
           playerX = clampPlayerX(playerX - 6);
           playerMonkey.style.left = `${playerX}%`;
@@ -808,12 +887,14 @@
         const touch = e.touches[0];
         if (!touch || isWon) return;
         isDragging = true;
+        hideMobileHint();
         movePlayerToClientX(touch.clientX);
       }, { passive: true });
 
       gameArea.addEventListener("touchmove", (e) => {
         const touch = e.touches[0];
         if (!touch || isWon || !isDragging) return;
+        hideMobileHint();
         movePlayerToClientX(touch.clientX);
       }, { passive: true });
 
@@ -840,8 +921,7 @@
 
       resetGameBtn.addEventListener("click", resetGame);
 
-      renderGame();
-      setInterval(tick, 120);
+      resetGame();
     }
 
     buildApp();
