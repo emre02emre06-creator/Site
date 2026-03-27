@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beyza için</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+    .float-emoji {
+      animation: floatY var(--duration, 4s) ease-in-out infinite;
+    }
+
+    @keyframes floatY {
+      0% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-16px) scale(1.06); }
+      100% { transform: translateY(0) scale(1); }
+    }
+
+    .soft-float-card {
+      animation: softCardFloat 3.4s ease-in-out infinite;
+    }
+
+    @keyframes softCardFloat {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .burst-icon {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      pointer-events: none;
+      font-size: 1.4rem;
+      transform: translate(-50%, -50%);
+      animation: burstFly 0.85s ease-out forwards;
+    }
+
+    @keyframes burstFly {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.6) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform:
+          translate(calc(-50% + var(--x)), calc(-50% + var(--y)))
+          scale(var(--scale))
+          rotate(var(--rotate));
+      }
+    }
+
+    .game-item {
+      will-change: transform, top, left;
+    }
+
+    .player-monkey {
+      transition: left 0.1s linear;
+    }
+
+    .glass {
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+  </style>
+</head>
+<body class="bg-[#fff8fb] text-gray-800 overflow-x-hidden">
+  <div id="app"></div>
+
+  <script>
+    const emotionCards = [
+      {
+        icon: "💞",
+        title: "Aşkım",
+        text: "Sana karşı hissettiğim şey geçici bir heves değildi. Zaman geçse de içimde sana ait kalan sıcaklık hiç eksilmedi; hatta uzak kaldıkça bunun ne kadar gerçek ve derin olduğunu daha iyi anladım."
+      },
+      {
+        icon: "🥺",
+        title: "Pişmanlığım",
+        text: "İçimde en ağır duran duygulardan biri pişmanlık oldu. Seni kırmış olma ihtimali, eksik kalan anlar ve daha iyi davranabileceğim yerler aklımda kaldı; bu yüzden özrüm sıradan bir söz değil."
+      },
+      {
+        icon: "🌈",
+        title: "Umudum",
+        text: "Her şeye rağmen içimde kaybolmayan bir umut var. Bu, geçmişi birebir geri istemek değil; daha güzelini, daha olgununu ve daha çok kıymet bilinenini birlikte kurabilme ihtimali."
+      }
+    ];
+
+    const memoryCards = [
+      { title: "Anı Kartı 1", className: "from-rose-100 to-pink-50 border-rose-100 text-rose-400", image: "photos/ani1.jpg" },
+      { title: "Anı Kartı 2", className: "from-pink-100 to-rose-50 border-pink-100 text-pink-400", image: "photos/ani2.jpg" },
+      { title: "Anı Kartı 3", className: "from-red-100 to-white border-rose-100 text-red-400", image: "photos/ani3.jpg" },
+      { title: "Anı Kartı 4", className: "from-rose-50 to-pink-100 border-rose-100 text-rose-400", image: "photos/ani4.jpg" },
+      { title: "Anı Kartı 5", className: "from-fuchsia-50 to-rose-100 border-fuchsia-100 text-fuchsia-400", image: "photos/ani5.jpg" }
+    ];
+
+    const timelineItems = [
+      {
+        date: "11 Ekim",
+        title: "Sevgili olduğumuz gün",
+        tone: "rose",
+        text: "Hikâyemizin başladığı, kalbimin gerçekten heyecanla attığı, seni hayatımda bambaşka bir yere koyduğum gün. Benim için sadece bir tarih değil; umut, heyecan ve mutluluğun bir araya geldiği çok özel bir başlangıçtı. O gün içimde oluşan his, sıradan bir hoşlanmadan çok daha fazlasıydı. Seni gördüğümde içimin yumuşaması, konuşurken zamanın daha güzel akması ve kalbimde sana özel bir yer açılması hep o günün içimde bıraktığı etkinin bir parçası oldu."
+      },
+      {
+        date: "İlk zamanların büyüsü",
+        title: "Kalbimin en hafif olduğu dönem",
+        tone: "fuchsia",
+        text: "Her mesajın yüzümde gülümseme bırakıyordu. Küçük şeyler bile anlamlı geliyordu. Seninle konuşmak günün en güzel anlarından biri oluyordu ve içimdeki mutluluk çok daha temiz, çok daha gerçekti. O dönem sadece güzel vakit geçirmek gibi değildi; sanki hayatın içinde daha parlak, daha canlı ve daha huzurlu bir alan açılmış gibiydi. Seninle kurduğum her bağ, her konuşma ve her küçük detay bende büyük bir anlam taşıyordu."
+      },
+      {
+        date: "Güzel zamanlarımız",
+        title: "Anılarımızın çoğaldığı yer",
+        tone: "pink",
+        text: "Gülüşler, konuşmalar, yakınlık, küçük şeylerde bile hissettirdiğin mutluluk... Belki dışarıdan sıradan görünürdü ama benim için çok kıymetliydi. Çünkü o anların içinde sen vardın. Birlikte geçen zaman sadece takvimde ilerleyen günler değildi; içimde biriken anılar, yüzümde kalan tebessümler ve sonradan dönüp baktığımda değerini daha da iyi anladığım duygulardı. Bugün geriye baktığımda, o anların her biri içimde hâlâ sıcak bir iz bırakıyor."
+      },
+      {
+        date: "Fark edişler",
+        title: "İçime oturan duygular",
+        tone: "amber",
+        text: "İnsan bazen elindeyken yeterince anlatamadığını, hissettiremediğini ya da bazı şeyleri eksik yaşattığını sonradan daha çok anlıyor. Ben de tam burada pişmanlığımı daha derin hissetmeye başladım. Bazen bir cümleyi daha güzel kurabilirdim, bazen daha çok kıymet gösterebilirdim, bazen de seni içimde taşıdığım değeri daha net hissettirebilirdim diye düşündüm. Bu fark edişler bende sadece üzgünlük değil, aynı zamanda içten bir öz eleştiri ve gerçekten düzeltme isteği bıraktı."
+      },
+      {
+        date: "10 Mart",
+        title: "Koptuğumuz gün",
+        tone: "slate",
+        text: "Dışarıdan sadece bir ayrılık günü gibi duruyor olabilir ama benim içimde bir boşluğun başladığı yer olarak kaldı. O günden sonra zaman geçti ama içimdeki eksiklik kolay geçmedi; çünkü giden sadece bir ilişki değil, sendin. O günle birlikte bazı alışkanlıklar sustu, bazı şeylerin tadı eksildi ve içimde sana ait olan yer daha da görünür hale geldi. Bazen insan bir şeyin yokluğunu ancak o gerçekten uzaklaştığında anlıyor; ben de senden sonra içimde kalan sessizlikte bunu çok derin hissettim."
+      }
+    ];
+
+    const initialGameItems = [
+      { id: 1, x: 12, y: 2, type: "banana", speed: 1.2 },
+      { id: 2, x: 32, y: 20, type: "banana", speed: 1.35 },
+      { id: 3, x: 56, y: 10, type: "bad", speed: 1.1 },
+      { id: 4, x: 72, y: 28, type: "banana", speed: 1.3 },
+      { id: 5, x: 84, y: 14, type: "bad", speed: 1.45 }
+    ];
+
+    const heroImageUrl = "photos/kapak.jpg";
+
+    function getGameMessage(score) {
+      if (score === 0) return "Minik maymunum için muzları topla 🍌";
+      if (score < 7) return "Güzel gidiyorsun, biraz daha muz lazım 💛";
+      if (score < 14) return "Maymunun karnı doyuyor, kalp ısınıyor 🐒";
+      if (score < 20) return "Az kaldı, dişi maymununa kavuşmaya çok yakın 💞";
+      return "20 skora ulaştın. Maymun sonunda dişi maymununa kavuştu ❤️🐒";
+    }
+
+    function clampPlayerX(value) {
+      return Math.max(8, Math.min(92, value));
+    }
+
+    function toneClasses(tone) {
+      switch (tone) {
+        case "rose":
+          return {
+            dot: "bg-rose-500",
+            card: "bg-gradient-to-r from-rose-500 to-pink-500 text-white border-transparent",
+            text: "text-white/95"
+          };
+        case "fuchsia":
+          return {
+            dot: "bg-fuchsia-400",
+            card: "bg-white border border-fuchsia-100 text-gray-800",
+            text: "text-gray-600"
+          };
+        case "pink":
+          return {
+            dot: "bg-pink-400",
+            card: "bg-pink-50 border border-pink-100 text-gray-800",
+            text: "text-gray-600"
+          };
+        case "amber":
+          return {
+            dot: "bg-amber-400",
+            card: "bg-amber-50 border border-amber-100 text-gray-800",
+            text: "text-gray-600"
+          };
+        case "slate":
+        default:
+          return {
+            dot: "bg-gray-400",
+            card: "bg-gradient-to-r from-slate-100 to-gray-100 border border-gray-200 text-gray-800",
+            text: "text-gray-600"
+          };
+      }
+    }
+
+    function runSelfChecks() {
+      const checks = [
+        getGameMessage(0) === "Minik maymunum için muzları topla 🍌",
+        getGameMessage(6) === "Güzel gidiyorsun, biraz daha muz lazım 💛",
+        getGameMessage(7) === "Maymunun karnı doyuyor, kalp ısınıyor 🐒",
+        getGameMessage(20) === "20 skora ulaştın. Maymun sonunda dişi maymununa kavuştu ❤️🐒",
+        emotionCards.length === 3,
+        memoryCards.length === 5,
+        timelineItems.length === 5,
+        initialGameItems.length === 5,
+        clampPlayerX(0) === 8,
+        clampPlayerX(50) === 50,
+        clampPlayerX(100) === 92,
+        toneClasses("rose").dot.includes("rose"),
+        toneClasses("pink").card.includes("bg-pink-50"),
+        toneClasses("slate").dot.includes("gray")
+      ];
+
+      if (checks.some((x) => !x)) {
+        throw new Error("Self-check failed");
+      }
+    }
+
+    runSelfChecks();
+
+    const floatingItems = [
+      { left: "8%", top: "14%", content: "💖", duration: "3.2s" },
+      { left: "18%", top: "28%", content: "✨", duration: "4s" },
+      { left: "82%", top: "16%", content: "💕", duration: "3.6s" },
+      { left: "12%", top: "74%", content: "💘", duration: "3.8s" },
+      { left: "86%", top: "78%", content: "💞", duration: "4.8s" },
+      { left: "48%", top: "10%", content: "🎀", duration: "4.2s" }
+    ];
+
+    function renderFloatingBackground() {
+      return `
+        <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+          <div class="absolute inset-0 bg-[linear-gradient(135deg,_rgba(255,247,250,1)_0%,_rgba(255,235,242,0.98)_18%,_rgba(255,244,248,0.97)_38%,_rgba(255,228,239,0.98)_58%,_rgba(255,241,247,0.99)_78%,_rgba(255,250,252,1)_100%)]"></div>
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,148,196,0.24),_transparent_22%),radial-gradient(circle_at_84%_16%,_rgba(255,104,180,0.14),_transparent_18%),radial-gradient(circle_at_bottom_left,_rgba(255,190,205,0.18),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(255,170,210,0.18),_transparent_22%),radial-gradient(circle_at_center,_rgba(255,255,255,0.28),_transparent_34%)]"></div>
+          <div class="absolute -top-24 -right-24 w-80 h-80 bg-pink-200/40 rounded-full blur-3xl"></div>
+          <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-rose-200/40 rounded-full blur-3xl"></div>
+          <div class="absolute top-1/3 left-1/4 w-72 h-72 bg-fuchsia-200/20 rounded-full blur-3xl"></div>
+          <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-amber-100/25 rounded-full blur-3xl"></div>
+
+          ${floatingItems.map(item => `
+            <div
+              class="absolute text-2xl md:text-3xl opacity-75 float-emoji"
+              style="left:${item.left}; top:${item.top}; --duration:${item.duration};"
+            >
+              ${item.content}
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderHeroPhoto() {
+      if (heroImageUrl) {
+        return `
+          <div class="h-64 md:h-80 rounded-[26px] overflow-hidden bg-white/15 border border-white/20">
+            <img src="${heroImageUrl}" alt="En özel fotoğraf" class="w-full h-full object-cover" />
+          </div>
+        `;
+      }
+
+      return `
+        <div class="rounded-[26px] bg-white/15 border border-white/20 px-5 py-4 backdrop-blur-sm">
+          <div class="h-24 flex items-center justify-center">
+            <div class="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center border border-white/20 shrink-0 text-3xl">
+              🖼️
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTimeline() {
+      return timelineItems.map((item) => {
+        const tone = toneClasses(item.tone);
+        return `
+          <div class="relative mb-8 last:mb-0 reveal">
+            <div class="absolute -left-[2px] md:left-0 w-5 h-5 rounded-full shadow-lg ${tone.dot}"></div>
+            <div class="ml-8 rounded-[28px] p-6 shadow-lg ${tone.card}">
+              <div class="flex items-center gap-2 mb-2 opacity-90">
+                <span class="text-lg">🕒</span>
+                <span class="font-semibold">${item.date}</span>
+              </div>
+              <h3 class="text-2xl font-bold">${item.title}</h3>
+              <p class="mt-3 leading-7 ${tone.text}">${item.text}</p>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderEmotionCards() {
+      return emotionCards.map((item, i) => `
+        <div
+          class="rounded-[30px] bg-white/90 p-7 shadow-xl border border-rose-100 hover:-translate-y-1 transition-transform reveal"
+          style="transition-delay:${i * 0.08}s"
+        >
+          <div class="text-4xl mb-4">${item.icon}</div>
+          <h3 class="text-2xl font-bold">${item.title}</h3>
+          <p class="mt-3 text-gray-600 leading-7">${item.text}</p>
+        </div>
+      `).join("");
+    }
+
+    function renderMemoryCards() {
+      return memoryCards.map((item) => `
+        <div class="snap-start shrink-0 w-[260px] md:w-[300px] rounded-[28px] overflow-hidden bg-gradient-to-br ${item.className} border shadow-lg">
+          <div class="h-[300px] flex items-center justify-center">
+            ${
+              item.image
+                ? `<img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover" />`
+                : `
+                  <div class="flex flex-col items-center justify-center">
+                    <div class="w-16 h-16 rounded-2xl bg-white/40 flex items-center justify-center border border-white/50 text-3xl">🖼️</div>
+                    <div class="mt-4 text-sm font-semibold">${item.title}</div>
+                  </div>
+                `
+            }
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function buildApp() {
+      const app = document.getElementById("app");
+
+      app.innerHTML = `
+        <div class="min-h-screen bg-[#fff8fb] text-gray-800 overflow-hidden relative">
+          ${renderFloatingBackground()}
+
+          <section class="relative z-10 max-w-6xl mx-auto px-6 pt-10 pb-16 md:pt-16 md:pb-24">
+            <div class="text-center reveal is-visible">
+              <div class="inline-flex items-center gap-2 rounded-full bg-white/85 glass px-5 py-2 shadow-lg text-sm font-medium mb-6 border border-rose-100">
+                <span class="text-rose-500">✨</span>
+                <span>Bu sayfa sadece sana özel, minik maymunum 💖</span>
+              </div>
+
+              <h1 class="text-4xl md:text-7xl font-black leading-tight tracking-tight">
+                Beyza Der,
+                <span class="block mt-2 bg-gradient-to-r from-rose-500 via-pink-500 to-red-400 bg-clip-text text-transparent">
+                  içimde kalan her duyguyu burada sana bıraktım
+                </span>
+              </h1>
+
+              <p class="mt-6 max-w-3xl mx-auto text-lg md:text-2xl text-gray-600 leading-relaxed">
+                Özlemimi, pişmanlığımı, sana olan sevgimi, hâlâ içimde yaşayan aşkı, kaybetmenin verdiği boşluğu ve yeniden başlama umudumu... Hepsini tek tek, saklamadan, eksiltmeden bu sayfaya koydum.
+              </p>
+            </div>
+
+            <div class="mt-12 grid lg:grid-cols-2 gap-8 items-center">
+              <div class="relative reveal">
+                <div class="rounded-[34px] bg-white/90 glass p-5 shadow-2xl border border-white/70">
+                  <div class="rounded-[34px] bg-gradient-to-br from-rose-500 via-pink-500 to-red-400 border border-rose-200 min-h-[430px] p-7 text-white shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-12 -top-10 w-36 h-36 rounded-full bg-white/15 blur-3xl"></div>
+                    <div class="absolute -left-10 bottom-0 w-32 h-32 rounded-full bg-white/10 blur-3xl"></div>
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.18),_transparent_45%)]"></div>
+
+                    <div class="relative z-10 h-full flex flex-col justify-between">
+                      <div>
+                        <div class="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-xs font-semibold backdrop-blur-sm border border-white/20">
+                          <span>❤️</span>
+                          <span>En özel fotoğraf alanı</span>
+                        </div>
+
+                        <div class="mt-5 text-3xl md:text-4xl font-black leading-tight">
+                          Bu köşe,
+                          <span class="block text-white/90">hikâyenizin en güzel karesi için hazır</span>
+                        </div>
+
+                        <p class="mt-4 text-sm md:text-base leading-7 text-white/90 max-w-md">
+                          Buraya en anlamlı fotoğrafınızı koy. Sayfaya ilk girildiğinde göze çarpan yer tam burası olsun; yalnızca bir görsel gibi değil, sizin aranızdaki en kıymetli anıyı taşıyan güçlü bir hatıra gibi dursun.
+                        </p>
+
+                        <p class="mt-4 text-sm md:text-base leading-7 text-white/85 max-w-md">
+                          Göz göze baktığınız bir kare, birlikte en çok güldüğünüz an ya da kalbinde yeri en ayrı olan fotoğraf... hangisi sizi en iyi anlatıyorsa bu alan onun için hazır.
+                        </p>
+                      </div>
+
+                      ${renderHeroPhoto()}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="absolute -bottom-5 -right-4 rounded-3xl bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-2xl px-5 py-4 z-10 soft-float-card">
+                  <div class="text-sm opacity-90">Bu sadece bir site değil</div>
+                  <div class="text-xl font-extrabold">Kalbimin sana yazdığı bir mektup ❤️</div>
+                </div>
+              </div>
+
+              <div class="space-y-5 reveal">
+                <div class="rounded-[30px] bg-white/90 p-7 shadow-xl border border-rose-100">
+                  <div class="flex items-center gap-3 mb-4">
+                    <span class="text-rose-500 text-2xl">💌</span>
+                    <h2 class="text-2xl font-bold">Sana içimden geçenler</h2>
+                  </div>
+                  <p class="text-gray-600 leading-8 text-lg">
+                    Bazen bir insan hayatından uzaklaşsa bile içindeki yeri hiç azalmıyor. Sende bende tam olarak böyle kaldın. Yokluğun gelip geçici bir boşluk gibi değil; günün hiç beklemediğim bir anında bile içimi yoklayan, bazı zamanlar kalbimi sıkıştıran, bazı zamanlar da seni ne kadar derinden sevdiğimi yeniden fark ettiren bir his gibi içimde yaşamaya devam etti.
+                  </p>
+                  <p class="text-gray-600 leading-8 text-lg mt-4">
+                    Sana karşı hissettiğim şey sadece “özledim” diyerek geçilecek kadar basit değil. Bu; seni kaybettikten sonra bile kalbimdeki yerinin değişmediğini görmek, zamanında daha iyi davranmam gereken yerleri tekrar tekrar düşünmek, keşke dediğim anların ağırlığını içimde taşımak ve buna rağmen seni hâlâ aynı içtenlikle sevmeye devam etmek.
+                  </p>
+                  <p class="text-gray-600 leading-8 text-lg mt-4">
+                    O yüzden burada yazdığım hiçbir cümle gösteriş olsun diye değil. İçimde ne kaldıysa, ne sustuysa, ne eksik hissettirdiyse onu dürüstçe sana ulaştırmak için yazıldı. Çünkü bazı duygular kısa cümlelere sığmıyor; seni içimde taşıdığım yer de tam olarak öyle bir yer.
+                  </p>
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-4">
+                  <div class="rounded-[26px] bg-gradient-to-br from-rose-500 to-pink-500 text-white p-6 shadow-xl">
+                    <div class="flex items-center gap-2 mb-3">
+                      <span>❤️</span>
+                      <div class="font-bold text-lg">İçimde kalanlar</div>
+                    </div>
+                    <ul class="space-y-2 text-white/95 leading-7">
+                      <li>• Sana karşı bitmeyen aşkım</li>
+                      <li>• Derin özlemim</li>
+                      <li>• Gerçek pişmanlığım</li>
+                      <li>• Yeniden başlama umudum</li>
+                    </ul>
+                  </div>
+
+                  <div class="rounded-[26px] bg-white p-6 shadow-xl border border-rose-100">
+                    <div class="flex items-center gap-2 mb-3 text-rose-500">
+                      <span>🎁</span>
+                      <div class="font-bold text-lg text-gray-800">Neyi özlüyorum?</div>
+                    </div>
+                    <ul class="space-y-2 text-gray-600 leading-7">
+                      <li>• Seninle konuşmayı</li>
+                      <li>• Sesini duymayı</li>
+                      <li>• Birlikte güldüğümüz anları</li>
+                      <li>• Bana “biz” hissini yaşatmanı</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="max-w-6xl mx-auto px-6 pb-14 relative z-10">
+            <div class="rounded-[36px] bg-white/90 border border-rose-100 shadow-2xl p-7 md:p-10 reveal">
+              <div class="flex items-center gap-3 mb-6">
+                <span class="text-2xl">🗓️</span>
+                <h2 class="text-3xl font-black">Bizim Çizelgemiz</h2>
+              </div>
+
+              <div class="relative pl-6 md:pl-10">
+                <div class="absolute left-2 md:left-4 top-2 bottom-2 w-1 rounded-full bg-gradient-to-b from-rose-400 via-pink-300 via-rose-200 to-gray-300"></div>
+                ${renderTimeline()}
+              </div>
+            </div>
+          </section>
+
+          <section class="relative z-10 max-w-6xl mx-auto px-6 pb-10">
+            <div class="grid lg:grid-cols-3 gap-6">
+              ${renderEmotionCards()}
+            </div>
+          </section>
+
+          <section class="relative z-10 max-w-6xl mx-auto px-6 pb-14">
+            <div class="rounded-[36px] bg-white/90 border border-rose-100 shadow-2xl p-7 md:p-10 reveal">
+              <div class="flex items-center gap-3 mb-6">
+                <span class="text-2xl">🖼️</span>
+                <h2 class="text-3xl font-black">Anılarımız</h2>
+              </div>
+
+              <p class="text-gray-600 text-lg leading-8 max-w-3xl">
+                Buraya birlikte çekildiğiniz fotoğrafları koyabilirsin. Her kare sadece bir görüntü gibi değil, yaşadığınız bir hissin, birlikte güldüğünüz bir anın, birbirinize yakın olduğunuz zamanların sessiz bir izi gibi dursun. Bazen tek bir fotoğraf, uzun uzun anlatılan cümlelerden daha fazlasını söyler.
+              </p>
+
+              <div class="mt-8 overflow-x-auto pb-4">
+                <div class="flex gap-5 min-w-max pr-2 snap-x snap-mandatory">
+                  ${renderMemoryCards()}
+                </div>
+              </div>
+
+              <div class="mt-4 text-sm text-gray-500">Sola-sağa kaydırarak 5 anıyı gezebilirsin.</div>
+            </div>
+          </section>
+
+          <section class="relative z-10 max-w-6xl mx-auto px-6 pb-14">
+            <div class="grid lg:grid-cols-2 gap-6 items-stretch">
+              <div class="rounded-[36px] bg-white/90 p-8 md:p-10 shadow-2xl border border-rose-100 reveal">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-xl mb-5 text-3xl">
+                  ❤️
+                </div>
+                <h2 class="text-3xl md:text-5xl font-black leading-tight">
+                  Minik maymunum,
+                  <span class="block text-rose-500 mt-2">seni sevmem hiç eksilmedi.</span>
+                </h2>
+                <p class="mt-6 text-lg md:text-xl text-gray-600 leading-8">
+                  Bazen insan bazı şeyleri kaybedince değerini daha derinden anlar derler ya, ben sende bunu fazlasıyla yaşadım. Hem pişman oldum, hem özledim, hem düşündüm; ama bütün bunların içinde sana olan sevgimin azalmadığını gördüm.
+                </p>
+                <p class="mt-4 text-lg md:text-xl text-gray-600 leading-8">
+                  Ben geçmişin aynısını geri istemiyorum. Ben; daha güzelini, daha olgununu, daha dikkatlisini, daha kıymet bileni ve seni daha çok mutlu edebileceğim bir başlangıcı istiyorum.
+                </p>
+              </div>
+
+              <div class="reveal">
+                <div class="rounded-[32px] bg-white/90 border border-rose-100 shadow-2xl p-6 md:p-8">
+                  <div class="flex items-center gap-3 mb-2">
+                    <span class="text-2xl text-rose-500">🏆</span>
+                    <h3 class="text-2xl font-bold">Muz Toplayan Maymun Oyunu</h3>
+                  </div>
+
+                  <p class="text-gray-600 leading-7">
+                    Maymunu sağa sola götür, gökten düşen muzları yakala, kötü şeylerden kaç ve 20 skorda dişi maymununa kavuş.
+                  </p>
+
+                  <div
+                    id="gameArea"
+                    class="mt-5 relative h-72 rounded-[28px] bg-gradient-to-br from-rose-100 via-pink-50 to-white overflow-hidden border border-rose-100 select-none touch-none"
+                  >
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.8),_transparent_65%)]"></div>
+
+                    <div id="gameItemsLayer" class="absolute inset-0 z-10"></div>
+
+                    <div
+                      id="playerMonkey"
+                      class="player-monkey absolute bottom-4 text-5xl z-10"
+                      style="left:50%; transform:translateX(-50%);"
+                    >
+                      🐒
+                    </div>
+
+                    <div
+                      id="gameOverlay"
+                      class="absolute inset-0 hidden flex-col items-center justify-center bg-white/75 backdrop-blur-sm z-20"
+                    >
+                      <div class="text-6xl mb-3">🐒💕🐵</div>
+                      <div class="text-2xl font-black text-rose-500 text-center px-6">
+                        Tebrikler, maymun sonunda dişi maymununa kavuştu.
+                      </div>
+                    </div>
+
+                    <div class="absolute left-1/2 -translate-x-1/2 bottom-4 md:hidden rounded-full bg-white/85 px-4 py-2 text-xs font-semibold text-rose-500 shadow z-10">
+                      Basılı tutup sağa sola sürükle
+                    </div>
+
+                    <div class="absolute right-4 top-4 inline-flex rounded-full bg-white/95 px-4 py-2 shadow text-sm font-semibold text-rose-500 z-10">
+                      Skor: <span id="scoreValue" class="ml-1">0 / 20</span>
+                    </div>
+
+                    <div class="absolute left-4 top-4 hidden md:inline-flex rounded-full bg-white/95 px-4 py-2 shadow text-sm font-semibold text-rose-500 z-10">
+                      Mouse'u oyun alanında gezdir
+                    </div>
+                  </div>
+
+                  <div
+                    id="gameMessage"
+                    class="mt-4 rounded-2xl bg-rose-50 border border-rose-100 p-4 text-center text-lg font-semibold text-rose-600 min-h-[68px] flex items-center justify-center"
+                  >
+                    Minik maymunum için muzları topla 🍌
+                  </div>
+
+                  <div class="mt-4 flex justify-center">
+                    <button
+                      id="resetGameBtn"
+                      class="inline-flex rounded-full bg-rose-500 px-5 py-3 shadow text-sm font-semibold text-white hover:scale-105 transition-transform"
+                    >
+                      Oyunu Sıfırla
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="relative z-10 px-6 pb-20">
+            <div class="max-w-5xl mx-auto rounded-[40px] bg-gradient-to-r from-rose-500 via-pink-500 to-red-400 text-white p-8 md:p-14 shadow-2xl text-center relative overflow-hidden reveal">
+              <div class="absolute inset-0 opacity-15 bg-[radial-gradient(circle_at_center,_white,_transparent_60%)]"></div>
+
+              <div class="relative z-10">
+                <div class="text-3xl md:text-5xl font-black mb-4">Beyza benimle yeniden bir geleceğe var mısın?</div>
+
+                <p class="mt-5 text-lg md:text-xl text-white/95 max-w-3xl mx-auto leading-8">
+                  Bu sayfada anlattığım her şeyin özü aslında tek bir yere çıkıyor: ben seni gerçekten, hem de içten içe, derinden ve eksilmeden sevdim. Zaman geçti, günler değişti, araya sessizlikler ve kırgınlıklar girdi ama kalbimde sana ayrılan yer hiç küçülmedi.
+                </p>
+
+                <p class="mt-4 text-lg md:text-xl text-white/95 max-w-3xl mx-auto leading-8">
+                  Seni özlemek bende gelip geçen bir duygu olmadı. Bazen bir anıda, bazen bir şarkıda, bazen de durduk yere günün tam ortasında içime oturan bir eksiklik gibi kaldı. Çünkü ben sende sadece bir sevgili görmedim; ben sende huzuru, yakınlığı, sıcaklığı, heyecanı ve kalbime iyi gelen o eşsiz hissi gördüm.
+                </p>
+
+                <p class="mt-4 text-lg md:text-xl text-white/95 max-w-3xl mx-auto leading-8">
+                  Ben geçmişi birebir geri getirmek istemiyorum. Ben seninle daha güzelini kurmak istiyorum. Eğer kalbinde bana dair küçücük de olsa hâlâ sıcak kalan bir yer varsa, ben o yere yeniden iyi gelmek, yeniden güven vermek ve yeniden gülümsetmek istiyorum.
+                </p>
+
+                <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                  <button
+                    data-burst-button
+                    data-href="https://wa.me/905074669597"
+                    data-newtab="true"
+                    data-burst-type="love"
+                    class="relative rounded-2xl bg-white text-rose-500 px-8 py-4 text-lg font-bold shadow-lg hover:scale-105 transition-transform"
+                  >
+                    WhatsApp’tan yaz 💕
+                  </button>
+
+                  <button
+                    data-burst-button
+                    data-href="tel:05074669597"
+                    data-newtab="false"
+                    data-burst-type="happiness"
+                    class="relative rounded-2xl bg-white/15 border border-white/30 text-white px-8 py-4 text-lg font-bold shadow-lg hover:scale-105 transition-transform"
+                  >
+                    Beni ara 🌈
+                  </button>
+                </div>
+
+                <div class="mt-8 inline-flex items-center gap-2 rounded-full bg-white/15 border border-white/20 px-5 py-3 text-white/95">
+                  <span>📞</span>
+                  <span>WhatsApp: 0507 466 95 97</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function initRevealAnimations() {
+      const revealEls = document.querySelectorAll(".reveal");
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      revealEls.forEach((el) => {
+        if (!el.classList.contains("is-visible")) observer.observe(el);
+      });
+    }
+
+    function initBurstButtons() {
+      const burstSets = {
+        love: ["💖", "💕", "💘", "❤️", "✨", "🌸"],
+        happiness: ["🥳", "🎉", "✨", "💞", "🌈", "💫"]
+      };
+
+      document.querySelectorAll("[data-burst-button]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const href = button.dataset.href || "#";
+          const newTab = button.dataset.newtab === "true";
+          const burstType = button.dataset.burstType || "love";
+          const icons = burstSets[burstType] || burstSets.love;
+
+          const oldBursts = button.querySelectorAll(".burst-icon");
+          oldBursts.forEach((el) => el.remove());
+
+          for (let i = 0; i < 12; i++) {
+            const span = document.createElement("span");
+            span.className = "burst-icon";
+            span.textContent = icons[i % icons.length];
+            span.style.setProperty("--x", `${-70 + Math.random() * 140}px`);
+            span.style.setProperty("--y", `${-30 - Math.random() * 90}px`);
+            span.style.setProperty("--rotate", `${-40 + Math.random() * 80}deg`);
+            span.style.setProperty("--scale", `${0.8 + Math.random() * 0.8}`);
+            button.appendChild(span);
+
+            setTimeout(() => span.remove(), 900);
+          }
+
+          setTimeout(() => {
+            if (newTab) {
+              window.open(href, "_blank", "noopener,noreferrer");
+            } else {
+              window.location.href = href;
+            }
+          }, 220);
+        });
+      });
+    }
+
+    function initGame() {
+      const gameArea = document.getElementById("gameArea");
+      const itemsLayer = document.getElementById("gameItemsLayer");
+      const playerMonkey = document.getElementById("playerMonkey");
+      const gameOverlay = document.getElementById("gameOverlay");
+      const scoreValue = document.getElementById("scoreValue");
+      const gameMessage = document.getElementById("gameMessage");
+      const resetGameBtn = document.getElementById("resetGameBtn");
+
+      let playerX = 50;
+      let score = 0;
+      let message = getGameMessage(0);
+      let isWon = false;
+      let isDragging = false;
+      let isMouseInside = false;
+      let items = initialGameItems.map((item) => ({ ...item }));
+
+      function renderItems() {
+        itemsLayer.innerHTML = items.map((item) => `
+          <div
+            class="absolute text-3xl z-10 game-item"
+            style="left:${item.x}%; top:${item.y}%; transform:translate(-50%, -50%);"
+          >
+            ${item.type === "banana" ? "🍌" : "💔"}
+          </div>
+        `).join("");
+      }
+
+      function renderGame() {
+        playerMonkey.style.left = `${playerX}%`;
+        scoreValue.textContent = `${score} / 20`;
+        gameMessage.textContent = message;
+        renderItems();
+
+        if (isWon) {
+          playerMonkey.style.display = "none";
+          gameOverlay.classList.remove("hidden");
+          gameOverlay.classList.add("flex");
+        } else {
+          playerMonkey.style.display = "block";
+          gameOverlay.classList.add("hidden");
+          gameOverlay.classList.remove("flex");
+        }
+      }
+
+      function movePlayerToClientX(clientX) {
+        const rect = gameArea.getBoundingClientRect();
+        const relative = ((clientX - rect.left) / rect.width) * 100;
+        playerX = clampPlayerX(relative);
+        playerMonkey.style.left = `${playerX}%`;
+      }
+
+      function resetGame() {
+        playerX = 50;
+        score = 0;
+        message = getGameMessage(0);
+        isWon = false;
+        isDragging = false;
+        isMouseInside = false;
+        items = initialGameItems.map((item) => ({ ...item }));
+        renderGame();
+      }
+
+      function tick() {
+        if (isWon) return;
+
+        items = items.map((item) => {
+          let nextY = item.y + item.speed * 2;
+          let nextX = item.x;
+          let nextType = item.type;
+          let nextSpeed = item.speed;
+
+          if (nextY >= 88) {
+            nextY = -8;
+            nextX = 8 + Math.random() * 84;
+            nextType = Math.random() > 0.35 ? "banana" : "bad";
+            nextSpeed = 1 + Math.random() * 0.8;
+          }
+
+          const caught = nextY >= 74 && nextY <= 92 && Math.abs(nextX - playerX) < 10;
+
+          if (caught) {
+            if (nextType === "banana") {
+              score = Math.min(20, score + 1);
+              message = getGameMessage(score);
+              if (score >= 20) isWon = true;
+            } else {
+              score = Math.max(0, score - 1);
+              message = score === 0 ? "Dikkat et, kötü şeylere çarpma 💔" : getGameMessage(score);
+            }
+
+            return {
+              ...item,
+              y: -10,
+              x: 8 + Math.random() * 84,
+              type: Math.random() > 0.35 ? "banana" : "bad",
+              speed: 1 + Math.random() * 0.8
+            };
+          }
+
+          return {
+            ...item,
+            y: nextY,
+            x: nextX,
+            type: nextType,
+            speed: nextSpeed
+          };
+        });
+
+        renderGame();
+      }
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") {
+          playerX = clampPlayerX(playerX - 6);
+          playerMonkey.style.left = `${playerX}%`;
+        }
+
+        if (e.key === "ArrowRight") {
+          playerX = clampPlayerX(playerX + 6);
+          playerMonkey.style.left = `${playerX}%`;
+        }
+      });
+
+      gameArea.addEventListener("touchstart", (e) => {
+        const touch = e.touches[0];
+        if (!touch || isWon) return;
+        isDragging = true;
+        movePlayerToClientX(touch.clientX);
+      }, { passive: true });
+
+      gameArea.addEventListener("touchmove", (e) => {
+        const touch = e.touches[0];
+        if (!touch || isWon || !isDragging) return;
+        movePlayerToClientX(touch.clientX);
+      }, { passive: true });
+
+      gameArea.addEventListener("touchend", () => {
+        isDragging = false;
+      });
+
+      gameArea.addEventListener("touchcancel", () => {
+        isDragging = false;
+      });
+
+      gameArea.addEventListener("mouseenter", () => {
+        if (window.innerWidth >= 768) isMouseInside = true;
+      });
+
+      gameArea.addEventListener("mouseleave", () => {
+        if (window.innerWidth >= 768) isMouseInside = false;
+      });
+
+      gameArea.addEventListener("mousemove", (e) => {
+        if (window.innerWidth < 768 || isWon || !isMouseInside) return;
+        movePlayerToClientX(e.clientX);
+      });
+
+      resetGameBtn.addEventListener("click", resetGame);
+
+      renderGame();
+      setInterval(tick, 120);
+    }
+
+    buildApp();
+    initRevealAnimations();
+    initBurstButtons();
+    initGame();
+  </script>
+</body>
+</html>
