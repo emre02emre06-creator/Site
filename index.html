@@ -8,16 +8,12 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    /* TEMEL AYARLAR */
     html { scroll-behavior: smooth; }
     body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 
-    /* YATAY SCROLLBAR GİZLEME (Anılar kısmı için daha temiz mobil görünüm) */
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* ANİMASYONLAR */
-    /* Arka plan emojileri için süzülme animasyonu */
     .float-emoji {
       animation: floatY var(--duration, 4s) ease-in-out infinite;
     }
@@ -27,7 +23,6 @@
       100% { transform: translateY(0) scale(1); }
     }
 
-    /* Kapak fotoğrafı üzerindeki küçük kartın animasyonu */
     .soft-float-card {
       animation: softCardFloat 3.4s ease-in-out infinite;
     }
@@ -37,7 +32,6 @@
       100% { transform: translateY(0); }
     }
 
-    /* Sayfa kaydırıldıkça elemanların belirmesi (Reveal) */
     .reveal {
       opacity: 0;
       transform: translateY(24px);
@@ -48,7 +42,6 @@
       transform: translateY(0);
     }
 
-    /* Butonlara tıklandığında çıkan parçacık (Burst) animasyonu */
     .burst-icon {
       position: absolute;
       left: 50%;
@@ -59,11 +52,19 @@
       animation: burstFly 0.85s ease-out forwards;
     }
     @keyframes burstFly {
-      0% { opacity: 1; transform: translate(-50%, -50%) scale(0.6) rotate(0deg); }
-      100% { opacity: 0; transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(var(--scale)) rotate(var(--rotate)); }
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.6) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(
+          calc(-50% + var(--x)),
+          calc(-50% + var(--y))
+        ) scale(var(--scale)) rotate(var(--rotate));
+      }
     }
 
-    /* OYUN İÇİ STİLLER */
     .game-item {
       position: absolute;
       z-index: 10;
@@ -76,21 +77,23 @@
       pointer-events: none;
       line-height: 1;
     }
+
     .player-monkey {
       transition: left 0.08s linear;
       will-change: left;
     }
 
-    /* GENEL STİLLER */
     .glass {
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
+
     .mobile-hint-hide {
       opacity: 0 !important;
       transform: translate(-50%, 10px) !important;
       pointer-events: none;
     }
+
     #mobileGameHint {
       transition: opacity 0.35s ease, transform 0.35s ease;
     }
@@ -100,10 +103,6 @@
   <div id="app"></div>
 
   <script>
-    /* =========================================
-       1. İÇERİK VE VERİ AYARLARI 
-       ========================================= */
-
     const emotionCards = [
       {
         icon: "💞",
@@ -171,7 +170,7 @@
       { id: 5, x: 84, y: 14, type: "bad", speed: 23 }
     ];
 
-    const heroImageUrl = "photos/kapak.jpg.jpg"; 
+    const heroImageUrl = "photos/kapak.jpg.jpg";
 
     function getGameMessage(score) {
       if (score === 0) return "Minik maymunum için muzları topla 🍌";
@@ -181,10 +180,6 @@
       return "20 skora ulaştın. Maymun sonunda dişi maymununa kavuştu ❤️🐒";
     }
 
-    /* =========================================
-       2. YARDIMCI FONKSİYONLAR
-       ========================================= */
-       
     function clampPlayerX(value) {
       return Math.max(8, Math.min(92, value));
     }
@@ -214,16 +209,12 @@
       { left: "48%", top: "10%", content: "🎀", duration: "4.2s" }
     ];
 
-    /* =========================================
-       3. HTML OLUŞTURUCU FONKSİYONLAR (Render)
-       ========================================= */
-
     function renderFloatingBackground() {
       return `
         <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
           <div class="absolute inset-0 bg-[linear-gradient(135deg,_rgba(255,247,250,1)_0%,_rgba(255,235,242,0.98)_18%,_rgba(255,244,248,0.97)_38%,_rgba(255,228,239,0.98)_58%,_rgba(255,241,247,0.99)_78%,_rgba(255,250,252,1)_100%)]"></div>
           <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,148,196,0.24),_transparent_22%),radial-gradient(circle_at_84%_16%,_rgba(255,104,180,0.14),_transparent_18%),radial-gradient(circle_at_bottom_left,_rgba(255,190,205,0.18),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(255,170,210,0.18),_transparent_22%),radial-gradient(circle_at_center,_rgba(255,255,255,0.28),_transparent_34%)]"></div>
-          
+
           <div class="absolute -top-24 -right-24 w-80 h-80 bg-pink-200/40 rounded-full blur-3xl"></div>
           <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-rose-200/40 rounded-full blur-3xl"></div>
           <div class="absolute top-1/3 left-1/4 w-72 h-72 bg-fuchsia-200/20 rounded-full blur-3xl"></div>
@@ -241,14 +232,14 @@
     function renderHeroPhoto() {
       if (heroImageUrl) {
         return `
-          <div class="h-[340px] sm:h-[400px] md:h-[480px] rounded-[26px] overflow-hidden bg-white/15 border border-white/20 mt-4">
-            <img src="${heroImageUrl}" alt="Özel Fotoğrafımız" class="w-full h-full object-cover" onerror="this.style.display='none'" />
+          <div class="h-[480px] sm:h-[620px] md:h-[760px] lg:h-[860px] rounded-[28px] overflow-hidden bg-white/15 border border-white/20">
+            <img src="${heroImageUrl}" alt="Özel Fotoğrafımız" class="w-full h-full object-cover object-center" onerror="this.style.display='none'" />
           </div>
         `;
       }
       return `
-        <div class="rounded-[26px] bg-white/15 border border-white/20 px-5 py-4 backdrop-blur-sm mt-4">
-          <div class="h-48 md:h-64 flex items-center justify-center">
+        <div class="rounded-[26px] bg-white/15 border border-white/20 px-5 py-4">
+          <div class="h-[480px] sm:h-[620px] md:h-[760px] flex items-center justify-center">
             <div class="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center border border-white/20 shrink-0 text-3xl">🖼️</div>
           </div>
         </div>
@@ -300,7 +291,6 @@
       `).join("");
     }
 
-    // ANA YAPIYI DOM'A BASMA
     function buildApp() {
       const app = document.getElementById("app");
       app.innerHTML = `
@@ -326,28 +316,15 @@
               </p>
             </div>
 
-            <div class="mt-10 md:mt-12 grid lg:grid-cols-2 gap-8 items-center">
-              
+            <div class="mt-10 md:mt-12 grid lg:grid-cols-2 gap-8 items-start">
               <div class="relative reveal px-2 md:px-0">
                 <div class="rounded-[34px] bg-white/90 glass p-3 md:p-5 shadow-2xl border border-white/70">
-                  <div class="rounded-[28px] md:rounded-[34px] bg-gradient-to-br from-rose-500 via-pink-500 to-red-400 border border-rose-200 min-h-[480px] md:min-h-[600px] p-5 md:p-7 text-white shadow-xl relative overflow-hidden flex flex-col">
+                  <div class="rounded-[28px] md:rounded-[34px] bg-gradient-to-br from-rose-500 via-pink-500 to-red-400 border border-rose-200 p-3 md:p-5 text-white shadow-xl relative overflow-hidden">
                     <div class="absolute -right-12 -top-10 w-36 h-36 rounded-full bg-white/15 blur-3xl"></div>
                     <div class="absolute -left-10 bottom-0 w-32 h-32 rounded-full bg-white/10 blur-3xl"></div>
                     <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.18),_transparent_45%)]"></div>
 
-                    <div class="relative z-10 h-full flex flex-col justify-between flex-grow">
-                      <div>
-                        <div class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 md:px-4 py-2 text-[10px] md:text-xs font-semibold backdrop-blur-sm border border-white/20 self-start">
-                          <span>❤️</span>
-                          <span>En özel fotoğraf alanı</span>
-                        </div>
-                        <div class="mt-4 text-2xl md:text-4xl font-black leading-tight">
-                          Bu köşe, <span class="block text-white/90">bizim en güzel anımız…</span>
-                        </div>
-                        <p class="mt-2 text-xs md:text-sm leading-6 text-white/90 max-w-md">
-                          Neden bilmiyorum ama en çok bu kareyi seviyorum...
-                        </p>
-                      </div>
+                    <div class="relative z-10">
                       ${renderHeroPhoto()}
                     </div>
                   </div>
@@ -447,7 +424,6 @@
 
           <section class="relative z-10 max-w-6xl mx-auto px-4 md:px-6 pb-14">
             <div class="grid lg:grid-cols-2 gap-6 items-stretch">
-              
               <div class="rounded-[30px] md:rounded-[36px] bg-white/90 p-6 md:p-10 shadow-2xl border border-rose-100 reveal">
                 <div class="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-xl mb-4 text-2xl md:text-3xl">❤️</div>
                 <h2 class="text-2xl sm:text-3xl md:text-5xl font-black leading-tight">
@@ -547,10 +523,6 @@
       `;
     }
 
-    /* =========================================
-       4. ETKİLEŞİM VE ANİMASYON MOTORLARI
-       ========================================= */
-
     function initRevealAnimations() {
       const revealEls = document.querySelectorAll(".reveal");
       const observer = new IntersectionObserver((entries) => {
@@ -606,7 +578,6 @@
       });
     }
 
-    // OYUN MOTORU
     function initGame() {
       const gameArea = document.getElementById("gameArea");
       const itemsLayer = document.getElementById("gameItemsLayer");
@@ -642,7 +613,7 @@
         itemsLayer.innerHTML = "";
         items.forEach((item) => {
           const el = document.createElement("div");
-          el.className = "game-item text-2xl md:text-3xl"; 
+          el.className = "game-item text-2xl md:text-3xl";
           el.textContent = item.type === "banana" ? "🍌" : "💔";
           item.el = el;
           itemsLayer.appendChild(el);
@@ -711,14 +682,17 @@
 
       function tick(deltaSec) {
         if (isWon) return;
+
         items.forEach((item) => {
           item.y += item.speed * deltaSec;
+
           if (item.y >= 88) {
             respawnItem(item);
             return;
           }
-          // Çarpışma Testi
-          const caught = item.y >= 74 && item.y <= 92 && Math.abs(item.x - playerX) < 12; 
+
+          const caught = item.y >= 74 && item.y <= 92 && Math.abs(item.x - playerX) < 12;
+
           if (caught) {
             if (item.type === "banana") {
               score = Math.min(20, score + 1);
@@ -728,18 +702,21 @@
               score = Math.max(0, score - 1);
               message = score === 0 ? "Dikkat et, kırık kalplere çarpma 💔" : getGameMessage(score);
             }
+
             respawnItem(item);
             renderHUD();
             return;
           }
+
           updateItemElement(item);
         });
+
         renderHUD();
       }
 
       function loop(now) {
         if (!lastTime) lastTime = now;
-        const deltaSec = Math.min((now - lastTime) / 1000, 0.03); 
+        const deltaSec = Math.min((now - lastTime) / 1000, 0.03);
         lastTime = now;
         tick(deltaSec);
         if (!isWon) animationFrameId = requestAnimationFrame(loop);
@@ -747,8 +724,14 @@
 
       window.addEventListener("keydown", (e) => {
         if (isWon) return;
-        if (e.key === "ArrowLeft") { playerX = clampPlayerX(playerX - 6); playerMonkey.style.left = `${playerX}%`; }
-        if (e.key === "ArrowRight") { playerX = clampPlayerX(playerX + 6); playerMonkey.style.left = `${playerX}%`; }
+        if (e.key === "ArrowLeft") {
+          playerX = clampPlayerX(playerX - 6);
+          playerMonkey.style.left = `${playerX}%`;
+        }
+        if (e.key === "ArrowRight") {
+          playerX = clampPlayerX(playerX + 6);
+          playerMonkey.style.left = `${playerX}%`;
+        }
       });
 
       gameArea.addEventListener("touchstart", (e) => {
@@ -769,8 +752,14 @@
       gameArea.addEventListener("touchend", () => { isDragging = false; });
       gameArea.addEventListener("touchcancel", () => { isDragging = false; });
 
-      gameArea.addEventListener("mouseenter", () => { if (window.innerWidth >= 768) isMouseInside = true; });
-      gameArea.addEventListener("mouseleave", () => { if (window.innerWidth >= 768) isMouseInside = false; });
+      gameArea.addEventListener("mouseenter", () => {
+        if (window.innerWidth >= 768) isMouseInside = true;
+      });
+
+      gameArea.addEventListener("mouseleave", () => {
+        if (window.innerWidth >= 768) isMouseInside = false;
+      });
+
       gameArea.addEventListener("mousemove", (e) => {
         if (window.innerWidth < 768 || isWon || !isMouseInside) return;
         movePlayerToClientX(e.clientX);
