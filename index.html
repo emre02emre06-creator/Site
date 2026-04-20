@@ -33,6 +33,15 @@
       100% { transform: translateY(0); }
     }
 
+    .pulse-soft {
+      animation: pulseSoft 2.6s ease-in-out infinite;
+    }
+    @keyframes pulseSoft {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.03); opacity: .92; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
     .reveal {
       opacity: 0;
       transform: translateY(24px);
@@ -59,10 +68,10 @@
       }
       100% {
         opacity: 0;
-        transform: translate(
-          calc(-50% + var(--x)),
-          calc(-50% + var(--y))
-        ) scale(var(--scale)) rotate(var(--rotate));
+        transform:
+          translate(calc(-50% + var(--x)), calc(-50% + var(--y)))
+          scale(var(--scale))
+          rotate(var(--rotate));
       }
     }
 
@@ -122,6 +131,48 @@
       }
     ];
 
+    const accountabilityCards = [
+      {
+        icon: "🕊️",
+        title: "Dik başlı davrandığım zamanlar",
+        text: "Bazen haklı olmayı, seni anlamanın önüne koydum. O an kendi bakış açıma fazla tutundum ve bunun seni ne kadar yorabileceğini yeterince göremedim. Şimdi dönüp baktığımda, sevgide inat değil anlayış gerektiğini daha iyi görüyorum."
+      },
+      {
+        icon: "💔",
+        title: "Keskin konuştuğum anlar",
+        text: "Bazı cümleler ağızdan bir anda çıkıyor ama karşı tarafta çok daha uzun kalıyor. Ben de bunu geç fark ettim. Söylediğim bazı şeyler belki benim için bir anlıktı ama sende iz bırakmış olabilir; bunu hafife almıyorum."
+      },
+      {
+        icon: "🤍",
+        title: "Kırdığımı kabul ediyorum",
+        text: "Seni üzmüş, kalbini daraltmış ve kendini değersiz hissettirmiş olabileceğim yerleri inkâr etmiyorum. Tam tersine, bunları görüp üstünü örtmeden kabul etmek istiyorum. Çünkü telafi, ancak gerçekten fark ederek başlar."
+      },
+      {
+        icon: "🌷",
+        title: "Telafi etme niyetim gerçek",
+        text: "Ben sadece güzel cümle kurmak istemiyorum. Daha dikkatli, daha yumuşak, daha anlayan ve daha güven veren biri olarak bunu davranışlarımla da göstermek istiyorum. Telafiyi sözde değil, tavırda yaşatmak istiyorum."
+      }
+    ];
+
+    const promiseCards = [
+      {
+        title: "Daha yumuşak olacağım",
+        text: "Bir şey anlatırken önce seni incitmeden anlatmayı düşüneceğim. Haklı çıkmaya değil, seni anlamaya odaklanacağım."
+      },
+      {
+        title: "Daha çok dinleyeceğim",
+        text: "Sadece cevap vermek için değil, gerçekten hissettiklerini anlamak için dinlemek istiyorum."
+      },
+      {
+        title: "Sana güven vereceğim",
+        text: "Bir şeyleri toparlamak için acele sözler değil, devamlılık göstermek gerektiğini biliyorum."
+      },
+      {
+        title: "Kıymetini daha net göstereceğim",
+        text: "İçimde ne hissettiğimi tahmin etmene bırakmadan, sana bunu açıkça ve güzelce hissettireceğim."
+      }
+    ];
+
     const memoryCards = [
       { className: "from-rose-100 to-pink-50 border-rose-100", image: "photos/ani1.jpg.jpg" },
       { className: "from-pink-100 to-rose-50 border-pink-100", image: "photos/ani2.jpg.jpg" },
@@ -135,7 +186,7 @@
         date: "11 Ekim",
         title: "Sevgili olduğumuz gün",
         tone: "rose",
-        text: "Hikâyemizin başladığı, kalbimin gerçekten heyecanla attığı, seni hayatımda bambaşka bir yere koyduğum gün. Benim için sadece bir tarih değil; umut, heyecan ve mutluluğun bir araya geldiği çok özel bir başlangıçtı. O gün içimde oluşan his, sıradan bir hoşlanmadan çok daha fazlasıydı."
+        text: "Hikâyemizin başladığı, kalbimin gerçekten heyecanla attığı, seni hayatımda bambaşka bir yere koyduğum gün. Benim için sadece bir tarih değil; umut, heyecan ve mutluluğun bir araya geldiği çok özel bir başlangıçtı."
       },
       {
         date: "İlk zamanların büyüsü",
@@ -172,6 +223,7 @@
     ];
 
     const heroImageUrl = "photos/kapak.jpg.jpg";
+    const separationDate = "2025-03-10T00:00:00";
 
     function getGameMessage(score) {
       if (score === 0) return "Minik maymunum için muzları topla 🍌";
@@ -207,7 +259,8 @@
       { left: "82%", top: "16%", content: "💕", duration: "3.6s" },
       { left: "12%", top: "74%", content: "💘", duration: "3.8s" },
       { left: "86%", top: "78%", content: "💞", duration: "4.8s" },
-      { left: "48%", top: "10%", content: "🎀", duration: "4.2s" }
+      { left: "48%", top: "10%", content: "🎀", duration: "4.2s" },
+      { left: "70%", top: "42%", content: "🌸", duration: "4.6s" }
     ];
 
     function renderFloatingBackground() {
@@ -276,6 +329,26 @@
       `).join("");
     }
 
+    function renderAccountabilityCards() {
+      return accountabilityCards.map((item, i) => `
+        <div class="rounded-[28px] bg-white/90 p-5 md:p-6 shadow-xl border border-rose-100 reveal" style="transition-delay:${i * 0.05}s">
+          <div class="text-3xl mb-3">${item.icon}</div>
+          <h3 class="text-lg md:text-xl font-bold">${item.title}</h3>
+          <p class="mt-3 text-gray-600 leading-7 text-sm md:text-base">${item.text}</p>
+        </div>
+      `).join("");
+    }
+
+    function renderPromiseCards() {
+      return promiseCards.map((item, i) => `
+        <div class="rounded-[24px] bg-gradient-to-br from-white to-rose-50 border border-rose-100 p-5 shadow-lg reveal" style="transition-delay:${i * 0.05}s">
+          <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-rose-500 text-white mb-3">✓</div>
+          <h3 class="font-bold text-lg">${item.title}</h3>
+          <p class="mt-2 text-gray-600 text-sm md:text-base leading-7">${item.text}</p>
+        </div>
+      `).join("");
+    }
+
     function renderMemoryCards() {
       return memoryCards.map((item) => `
         <div class="snap-center shrink-0 w-[220px] sm:w-[240px] md:w-[260px] lg:w-[280px] rounded-[28px] overflow-hidden bg-gradient-to-br ${item.className} border shadow-lg">
@@ -313,8 +386,38 @@
               </h1>
 
               <p class="mt-4 md:mt-6 max-w-3xl mx-auto text-base sm:text-lg md:text-2xl text-gray-600 leading-relaxed px-2">
-                Özlemimi, pişmanlığımı, sana olan sevgimi, hâlâ içimde yaşayan aşkı, kaybetmenin verdiği boşluğu ve yeniden başlama umudumu... Hepsini tek tek, saklamadan, eksiltmeden bu sayfaya koydum.
+                Özlemimi, pişmanlığımı, sana olan sevgimi, hatalarımı fark edişimi, içimde yaşayan aşkı, kaybetmenin verdiği boşluğu ve yeniden başlama umudumu... Hepsini tek tek, saklamadan, eksiltmeden bu sayfaya koydum.
               </p>
+            </div>
+
+            <div class="mt-8 md:mt-10 reveal">
+              <div class="rounded-[30px] md:rounded-[36px] bg-gradient-to-r from-rose-500 via-pink-500 to-red-400 text-white p-5 md:p-7 shadow-2xl pulse-soft">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+                  <div>
+                    <div class="text-sm md:text-base text-white/90">10 Mart’tan beri ayrı kaldığımız süre</div>
+                    <div class="text-2xl md:text-4xl font-black mt-1">Her gün seni biraz daha özledim</div>
+                  </div>
+
+                  <div class="grid grid-cols-4 gap-3 md:gap-4 min-w-[280px]">
+                    <div class="rounded-2xl bg-white/15 border border-white/20 p-3 text-center">
+                      <div id="daysValue" class="text-2xl md:text-3xl font-black">0</div>
+                      <div class="text-xs md:text-sm text-white/85">Gün</div>
+                    </div>
+                    <div class="rounded-2xl bg-white/15 border border-white/20 p-3 text-center">
+                      <div id="hoursValue" class="text-2xl md:text-3xl font-black">0</div>
+                      <div class="text-xs md:text-sm text-white/85">Saat</div>
+                    </div>
+                    <div class="rounded-2xl bg-white/15 border border-white/20 p-3 text-center">
+                      <div id="minutesValue" class="text-2xl md:text-3xl font-black">0</div>
+                      <div class="text-xs md:text-sm text-white/85">Dakika</div>
+                    </div>
+                    <div class="rounded-2xl bg-white/15 border border-white/20 p-3 text-center">
+                      <div id="secondsValue" class="text-2xl md:text-3xl font-black">0</div>
+                      <div class="text-xs md:text-sm text-white/85">Saniye</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="mt-10 md:mt-12 grid lg:grid-cols-2 gap-8 items-start">
@@ -350,7 +453,7 @@
                     Sana karşı hissettiğim şey sadece “özledim” diyerek geçilecek kadar basit değil. Bu; seni kaybettikten sonra bile kalbimdeki yerinin değişmediğini görmek, zamanında daha iyi davranmam gereken yerleri tekrar tekrar düşünmek, keşke dediğim anların ağırlığını içimde taşımak ve buna rağmen seni hâlâ aynı içtenlikle sevmeye devam etmek.
                   </p>
                   <p class="text-gray-600 leading-7 md:leading-8 text-sm md:text-lg mt-3 md:mt-4">
-                    O yüzden burada yazdığım hiçbir cümle gösteriş olsun diye değil. İçimde ne kaldıysa, ne sustuysa, ne eksik hissettirdiyse onu dürüstçe sana ulaştırmak için yazıldı.
+                    O yüzden burada yazdığım hiçbir cümle gösteriş olsun diye değil. İçimde ne kaldıysa, ne sustuysa, ne eksik hissettirdiyse onu dürüstçe sana ulaştırmak için yazıldı. Çünkü ben artık bazı şeyleri daha net görüyorum: sevgi varsa, onun içinde özen de olmalı; değer vermek varsa, bunun dili de daha yumuşak olmalı.
                   </p>
                 </div>
 
@@ -385,6 +488,25 @@
             </div>
           </section>
 
+          <section class="relative z-10 max-w-6xl mx-auto px-4 md:px-6 pb-10">
+            <div class="rounded-[30px] md:rounded-[36px] bg-white/90 p-5 md:p-10 shadow-2xl border border-rose-100 reveal">
+              <div class="text-center max-w-3xl mx-auto">
+                <div class="inline-flex items-center gap-2 rounded-full bg-rose-50 border border-rose-100 px-4 py-2 text-rose-500 text-sm font-semibold">
+                  <span>🫶</span>
+                  <span>İçten bir kabul</span>
+                </div>
+                <h2 class="mt-4 text-2xl md:text-4xl font-black">Hatalarımı artık daha net görüyorum</h2>
+                <p class="mt-4 text-gray-600 text-sm md:text-lg leading-7 md:leading-8">
+                  Ben burada sadece seni özlediğimi değil, nerelerde yanlış yaptığımı da söylemek istiyorum. Çünkü seni yeniden kazanmak isteyip de kendime hiç bakmamış gibi davranmak doğru olmazdı. Ben bazı şeylerin üstünü örtmek değil, onları fark edip dürüstçe önüne koymak istiyorum.
+                </p>
+              </div>
+
+              <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-5 mt-8">
+                ${renderAccountabilityCards()}
+              </div>
+            </div>
+          </section>
+
           <section class="max-w-6xl mx-auto px-4 md:px-6 pb-10 md:pb-14 relative z-10">
             <div class="rounded-[30px] md:rounded-[36px] bg-white/90 border border-rose-100 shadow-2xl p-5 md:p-10 reveal">
               <div class="flex items-center gap-3 mb-6">
@@ -404,6 +526,26 @@
             </div>
           </section>
 
+          <section class="relative z-10 max-w-6xl mx-auto px-4 md:px-6 pb-10">
+            <div class="rounded-[30px] md:rounded-[36px] bg-gradient-to-br from-rose-500 via-pink-500 to-red-400 text-white p-6 md:p-10 shadow-2xl reveal overflow-hidden relative">
+              <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_white,_transparent_60%)]"></div>
+              <div class="relative z-10">
+                <div class="inline-flex items-center gap-2 rounded-full bg-white/15 border border-white/20 px-4 py-2 text-sm font-semibold">
+                  <span>🌤️</span>
+                  <span>Telafi etmek istediğim şeyler</span>
+                </div>
+                <h2 class="mt-4 text-2xl md:text-4xl font-black">Bu sefer sadece konuşmak değil, davranışlarımla da göstermek istiyorum</h2>
+                <p class="mt-4 text-white/95 leading-7 md:leading-8 text-sm md:text-lg max-w-3xl">
+                  Ben bazı şeyleri artık daha açık görüyorum. Sevmenin tek başına yetmediği yerler var; sevginin yanında sabır, incelik, özür, dikkat ve güven de gerekiyor. Sana bunu sadece cümlelerle değil, zaman içinde hissettirmek isterim.
+                </p>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+                  ${renderPromiseCards()}
+                </div>
+              </div>
+            </div>
+          </section>
+
           <section class="relative z-10 max-w-6xl mx-auto px-4 md:px-6 pb-10 md:pb-14">
             <div class="rounded-[30px] md:rounded-[36px] bg-white/90 border border-rose-100 shadow-2xl p-5 md:p-10 reveal">
               <div class="flex items-center gap-3 mb-4 md:mb-6">
@@ -420,6 +562,38 @@
             </div>
           </section>
 
+          <section class="relative z-10 max-w-6xl mx-auto px-4 md:px-6 pb-10">
+            <div class="grid lg:grid-cols-2 gap-6 items-stretch">
+              <div class="rounded-[30px] md:rounded-[36px] bg-white/90 p-6 md:p-10 shadow-2xl border border-rose-100 reveal">
+                <div class="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-xl mb-4 text-2xl md:text-3xl">🤍</div>
+                <h2 class="text-2xl sm:text-3xl md:text-5xl font-black leading-tight">
+                  Seni kırmış olabileceğim yerler için
+                  <span class="block text-rose-500 mt-2">gerçekten üzgünüm.</span>
+                </h2>
+                <p class="mt-4 md:mt-6 text-base md:text-xl text-gray-600 leading-7 md:leading-8">
+                  Bazen insan sevdiği kişiyi üzmek istemez ama buna rağmen yanlış yapabilir. Ben de bunu inkâr etmiyorum. Kırdığım, daralttığım, yorduğum ya da içini sessizce acıttığım yerler olduysa bunun sorumluluğunu almaktan kaçmıyorum.
+                </p>
+                <p class="mt-3 md:mt-4 text-base md:text-xl text-gray-600 leading-7 md:leading-8">
+                  Ben burada kendimi aklamak istemiyorum. Sadece seni sevdiğimi değil, yanlışlarımı da sahiplenebildiğimi göstermek istiyorum.
+                </p>
+              </div>
+
+              <div class="rounded-[30px] md:rounded-[36px] bg-white/90 p-6 md:p-10 shadow-2xl border border-rose-100 reveal">
+                <div class="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-fuchsia-500 to-rose-500 text-white shadow-xl mb-4 text-2xl md:text-3xl">🌈</div>
+                <h2 class="text-2xl sm:text-3xl md:text-5xl font-black leading-tight">
+                  Yine de içimde
+                  <span class="block text-rose-500 mt-2">güzel bir ihtimal yaşıyor.</span>
+                </h2>
+                <p class="mt-4 md:mt-6 text-base md:text-xl text-gray-600 leading-7 md:leading-8">
+                  Ben geçmişin aynısını geri istemiyorum. Ben; daha güzelini, daha olgununu, daha dikkatlisini, daha kıymet bileni ve seni daha çok mutlu edebileceğim bir başlangıcı istiyorum.
+                </p>
+                <p class="mt-3 md:mt-4 text-base md:text-xl text-gray-600 leading-7 md:leading-8">
+                  Eğer kalbinde bana dair hâlâ küçücük de olsa sıcak kalan bir yer varsa, ben o yere yeniden iyi gelmek, güven vermek ve seni üzmeden sevebilmek istiyorum.
+                </p>
+              </div>
+            </div>
+          </section>
+
           <section class="relative z-10 max-w-6xl mx-auto px-4 md:px-6 pb-14">
             <div class="grid lg:grid-cols-2 gap-6 items-stretch">
               <div class="rounded-[30px] md:rounded-[36px] bg-white/90 p-6 md:p-10 shadow-2xl border border-rose-100 reveal">
@@ -432,7 +606,7 @@
                   Bazen insan bazı şeyleri kaybedince değerini daha derinden anlar derler ya, ben sende bunu fazlasıyla yaşadım. Hem pişman oldum, hem özledim, hem düşündüm; ama bütün bunların içinde sana olan sevgimin azalmadığını gördüm.
                 </p>
                 <p class="mt-3 md:mt-4 text-base md:text-xl text-gray-600 leading-7 md:leading-8">
-                  Ben geçmişin aynısını geri istemiyorum. Ben; daha güzelini, daha olgununu, daha dikkatlisini, daha kıymet bileni ve seni daha çok mutlu edebileceğim bir başlangıcı istiyorum.
+                  Belki her şeyi mükemmel yapamadım ama sana karşı olan duygumun samimiyetini hiç kaybetmedim. O yüzden bu sayfa benim için sadece bir tasarım değil; içimde taşımaya devam ettiğim duyguların açık hali.
                 </p>
               </div>
 
@@ -497,7 +671,7 @@
                   Seni özlemek bende gelip geçen bir duygu olmadı. Bazen bir anıda, bazen bir şarkıda, bazen de durduk yere günün tam ortasında içime oturan bir eksiklik gibi kaldı.
                 </p>
                 <p class="mt-3 md:mt-4 text-sm md:text-xl text-white/95 max-w-3xl mx-auto leading-7 md:leading-8 font-semibold">
-                  Ben geçmişi birebir geri getirmek istemiyorum. Ben seninle daha güzelini kurmak istiyorum.
+                  Ben geçmişi birebir geri getirmek istemiyorum. Ben seninle daha güzelini kurmak istiyorum. Eğer kalbinde hâlâ küçücük bir yer kaldıysa, ben o yere bu kez daha dikkatli, daha yumuşak ve daha güvenli bir şekilde gelmek istiyorum.
                 </p>
 
                 <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
@@ -535,6 +709,35 @@
       revealEls.forEach((el) => {
         if (!el.classList.contains("is-visible")) observer.observe(el);
       });
+    }
+
+    function initCounter() {
+      const daysEl = document.getElementById("daysValue");
+      const hoursEl = document.getElementById("hoursValue");
+      const minutesEl = document.getElementById("minutesValue");
+      const secondsEl = document.getElementById("secondsValue");
+      if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return;
+
+      const start = new Date(separationDate).getTime();
+
+      function updateCounter() {
+        const now = Date.now();
+        const diff = Math.max(0, now - start);
+
+        const totalSeconds = Math.floor(diff / 1000);
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        daysEl.textContent = days;
+        hoursEl.textContent = String(hours).padStart(2, "0");
+        minutesEl.textContent = String(minutes).padStart(2, "0");
+        secondsEl.textContent = String(seconds).padStart(2, "0");
+      }
+
+      updateCounter();
+      setInterval(updateCounter, 1000);
     }
 
     function initBurstButtons() {
@@ -769,6 +972,7 @@
 
     buildApp();
     initRevealAnimations();
+    initCounter();
     initBurstButtons();
     initGame();
   </script>
