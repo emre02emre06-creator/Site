@@ -11,8 +11,9 @@
     html { scroll-behavior: smooth; }
     body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 
-    .hide-scrollbar::-webkit-scrollbar { display: none; }
-    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .hide-scrollbar::-webkit-scrollbar { height: 8px; }
+    .hide-scrollbar::-webkit-scrollbar-thumb { background: rgba(244,114,182,.35); border-radius: 999px; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: thin; scrollbar-color: rgba(244,114,182,.35) transparent; }
 
     .float-emoji {
       animation: floatY var(--duration, 4s) ease-in-out infinite;
@@ -134,31 +135,31 @@
         date: "11 Ekim",
         title: "Sevgili olduğumuz gün",
         tone: "rose",
-        text: "Hikâyemizin başladığı, kalbimin gerçekten heyecanla attığı, seni hayatımda bambaşka bir yere koyduğum gün. Benim için sadece bir tarih değil; umut, heyecan ve mutluluğun bir araya geldiği çok özel bir başlangıçtı. O gün içimde oluşan his, sıradan bir hoşlanmadan çok daha fazlasıydı. Seni gördüğümde içimin yumuşaması, konuşurken zamanın daha güzel akması ve kalbimde sana özel bir yer açılması hep o günün içimde bıraktığı etkinin bir parçası oldu."
+        text: "Hikâyemizin başladığı, kalbimin gerçekten heyecanla attığı, seni hayatımda bambaşka bir yere koyduğum gün. Benim için sadece bir tarih değil; umut, heyecan ve mutluluğun bir araya geldiği çok özel bir başlangıçtı. O gün içimde oluşan his, sıradan bir hoşlanmadan çok daha fazlasıydı."
       },
       {
         date: "İlk zamanların büyüsü",
         title: "Kalbimin en hafif olduğu dönem",
         tone: "fuchsia",
-        text: "Her mesajın yüzümde gülümseme bırakıyordu. Küçük şeyler bile anlamlı geliyordu. Seninle konuşmak günün en güzel anlarından biri oluyordu ve içimdeki mutluluk çok daha temiz, çok daha gerçekti. O dönem sadece güzel vakit geçirmek gibi değildi; sanki hayatın içinde daha parlak, daha canlı ve daha huzurlu bir alan açılmış gibiydi. Seninle kurduğum her bağ, her konuşma ve her küçük detay bende büyük bir anlam taşıyordu."
+        text: "Her mesajın yüzümde gülümseme bırakıyordu. Küçük şeyler bile anlamlı geliyordu. Seninle konuşmak günün en güzel anlarından biri oluyordu ve içimdeki mutluluk çok daha temiz, çok daha gerçekti."
       },
       {
         date: "Güzel zamanlarımız",
         title: "Anılarımızın çoğaldığı yer",
         tone: "pink",
-        text: "Gülüşler, konuşmalar, yakınlık, küçük şeylerde bile hissettirdiğin mutluluk... Belki dışarıdan sıradan görünürdü ama benim için çok kıymetliydi. Çünkü o anların içinde sen vardın. Birlikte geçen zaman sadece takvimde ilerleyen günler değildi; içimde biriken anılar, yüzümde kalan tebessümler ve sonradan dönüp baktığımda değerini daha da iyi anladığım duygulardı. Bugün geriye baktığımda, o anların her biri içimde hâlâ sıcak bir iz bırakıyor."
+        text: "Gülüşler, konuşmalar, yakınlık, küçük şeylerde bile hissettirdiğin mutluluk... Belki dışarıdan sıradan görünürdü ama benim için çok kıymetliydi. Çünkü o anların içinde sen vardın."
       },
       {
         date: "Fark edişler",
         title: "İçime oturan duygular",
         tone: "amber",
-        text: "İnsan bazen elindeyken yeterince anlatamadığını, hissettiremediğini ya da bazı şeyleri eksik yaşattığını sonradan daha çok anlıyor. Ben de tam burada pişmanlığımı daha derin hissetmeye başladım. Bazen bir cümleyi daha güzel kurabilirdim, bazen daha çok kıymet gösterebilirdim, bazen de seni içimde taşıdığım değeri daha net hissettirebilirdim diye düşündüm. Bu fark edişler bende sadece üzgünlük değil, aynı zamanda içten bir öz eleştiri ve gerçekten düzeltme isteği bıraktı."
+        text: "İnsan bazen elindeyken yeterince anlatamadığını, hissettiremediğini ya da bazı şeyleri eksik yaşattığını sonradan daha çok anlıyor. Ben de tam burada pişmanlığımı daha derin hissetmeye başladım."
       },
       {
         date: "10 Mart",
         title: "Koptuğumuz gün",
         tone: "slate",
-        text: "Dışarıdan sadece bir ayrılık günü gibi duruyor olabilir ama benim içimde bir boşluğun başladığı yer olarak kaldı. O günden sonra zaman geçti ama içimdeki eksiklik kolay geçmedi; çünkü giden sadece bir ilişki değil, sendin. O günle birlikte bazı alışkanlıklar sustu, bazı şeylerin tadı eksildi ve içimde sana ait olan yer daha da görünür hale geldi. Bazen insan bir şeyin yokluğunu ancak o gerçekten uzaklaştığında anlıyor; ben de senden sonra içimde kalan sessizlikte bunu çok derin hissettim."
+        text: "Dışarıdan sadece bir ayrılık günü gibi duruyor olabilir ama benim içimde bir boşluğun başladığı yer olarak kaldı. O günden sonra zaman geçti ama içimdeki eksiklik kolay geçmedi; çünkü giden sadece bir ilişki değil, sendin."
       }
     ];
 
@@ -232,14 +233,14 @@
     function renderHeroPhoto() {
       if (heroImageUrl) {
         return `
-          <div class="h-[480px] sm:h-[620px] md:h-[760px] lg:h-[860px] rounded-[28px] overflow-hidden bg-white/15 border border-white/20">
+          <div class="h-[620px] sm:h-[760px] md:h-[980px] lg:h-[1120px] rounded-[30px] overflow-hidden bg-white/15 border border-white/20">
             <img src="${heroImageUrl}" alt="Özel Fotoğrafımız" class="w-full h-full object-cover object-center" onerror="this.style.display='none'" />
           </div>
         `;
       }
       return `
-        <div class="rounded-[26px] bg-white/15 border border-white/20 px-5 py-4">
-          <div class="h-[480px] sm:h-[620px] md:h-[760px] flex items-center justify-center">
+        <div class="rounded-[30px] bg-white/15 border border-white/20 px-5 py-4">
+          <div class="h-[620px] sm:h-[760px] md:h-[980px] lg:h-[1120px] flex items-center justify-center">
             <div class="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center border border-white/20 shrink-0 text-3xl">🖼️</div>
           </div>
         </div>
@@ -251,7 +252,7 @@
         const tone = toneClasses(item.tone);
         return `
           <div class="relative mb-8 last:mb-0 reveal">
-            <div class="absolute -left-[10px] md:-left-[10px] top-6 w-5 h-5 rounded-full shadow-lg ${tone.dot} z-10"></div>
+            <div class="absolute -left-[10px] top-6 w-5 h-5 rounded-full shadow-lg ${tone.dot} z-10"></div>
             <div class="ml-6 md:ml-8 rounded-[28px] p-5 md:p-6 shadow-lg ${tone.card}">
               <div class="flex items-center gap-2 mb-2 opacity-90">
                 <span class="text-lg">🕒</span>
@@ -277,8 +278,8 @@
 
     function renderMemoryCards() {
       return memoryCards.map((item) => `
-        <div class="snap-center md:snap-start shrink-0 w-[240px] md:w-[300px] rounded-[28px] overflow-hidden bg-gradient-to-br ${item.className} border shadow-lg">
-          <div class="h-[340px] md:h-[420px] flex items-center justify-center relative group">
+        <div class="snap-center shrink-0 w-[290px] sm:w-[340px] md:w-[420px] lg:w-[480px] rounded-[28px] overflow-hidden bg-gradient-to-br ${item.className} border shadow-lg">
+          <div class="h-[420px] sm:h-[500px] md:h-[620px] lg:h-[700px] flex items-center justify-center relative group">
             ${
               item.image
                 ? `<img src="${item.image}" alt="Anımız" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.style.display='none'" />`
@@ -349,7 +350,7 @@
                     Sana karşı hissettiğim şey sadece “özledim” diyerek geçilecek kadar basit değil. Bu; seni kaybettikten sonra bile kalbimdeki yerinin değişmediğini görmek, zamanında daha iyi davranmam gereken yerleri tekrar tekrar düşünmek, keşke dediğim anların ağırlığını içimde taşımak ve buna rağmen seni hâlâ aynı içtenlikle sevmeye devam etmek.
                   </p>
                   <p class="text-gray-600 leading-7 md:leading-8 text-sm md:text-lg mt-3 md:mt-4">
-                    O yüzden burada yazdığım hiçbir cümle gösteriş olsun diye değil. İçimde ne kaldıysa, ne sustuysa, ne eksik hissettirdiyse onu dürüstçe sana ulaştırmak için yazıldı. Çünkü bazı duygular kısa cümlelere sığmıyor; seni içimde taşıdığım yer de tam olarak öyle bir yer.
+                    O yüzden burada yazdığım hiçbir cümle gösteriş olsun diye değil. İçimde ne kaldıysa, ne sustuysa, ne eksik hissettirdiyse onu dürüstçe sana ulaştırmak için yazıldı.
                   </p>
                 </div>
 
@@ -410,15 +411,15 @@
                 <h2 class="text-2xl md:text-3xl font-black">Anılarımız</h2>
               </div>
               <p class="text-gray-600 text-sm md:text-lg leading-7 md:leading-8 max-w-3xl">
-                Buraya birlikte çekildiğiniz fotoğrafları koyabilirsin. Her kare sadece bir görüntü gibi değil, yaşadığınız bir hissin, birlikte güldüğünüz bir anın, birbirinize yakın olduğunuz zamanların sessiz bir izi gibi dursun. Bazen tek bir fotoğraf, uzun uzun anlatılan cümlelerden daha fazlasını söyler.
+                Buraya birlikte çekildiğiniz fotoğrafları koyabilirsin. Sola-sağa kaydırarak tüm anıları görebilirsin. Bu alan hem mobilde hem PC’de yatay kaydırmalı çalışır.
               </p>
 
-              <div class="mt-6 md:mt-8 overflow-x-auto pb-4 hide-scrollbar snap-x snap-mandatory">
-                <div class="flex gap-4 md:gap-5 min-w-max pr-2">
+              <div class="mt-6 md:mt-8 overflow-x-auto overflow-y-hidden pb-4 hide-scrollbar snap-x snap-mandatory cursor-grab active:cursor-grabbing">
+                <div class="flex gap-4 md:gap-6 min-w-max pr-4">
                   ${renderMemoryCards()}
                 </div>
               </div>
-              <div class="mt-2 text-xs md:text-sm text-gray-500 text-center md:text-left">Sola-sağa kaydırarak anıları gezebilirsin 👆</div>
+              <div class="mt-2 text-xs md:text-sm text-gray-500 text-center md:text-left">PC ve telefonda sola-sağa kaydırabilirsin 👆</div>
             </div>
           </section>
 
@@ -493,13 +494,13 @@
               <div class="relative z-10">
                 <div class="text-2xl sm:text-3xl md:text-5xl font-black mb-4 leading-tight">Beyza benimle yeniden bir geleceğe var mısın?</div>
                 <p class="mt-4 md:mt-5 text-sm md:text-xl text-white/95 max-w-3xl mx-auto leading-7 md:leading-8">
-                  Bu sayfada anlattığım her şeyin özü aslında tek bir yere çıkıyor: ben seni gerçekten, hem de içten içe, derinden ve eksilmeden sevdim. Zaman geçti, günler değişti, araya sessizlikler ve kırgınlıklar girdi ama kalbimde sana ayrılan yer hiç küçülmedi.
+                  Bu sayfada anlattığım her şeyin özü aslında tek bir yere çıkıyor: ben seni gerçekten, hem de içten içe, derinden ve eksilmeden sevdim.
                 </p>
                 <p class="mt-3 md:mt-4 text-sm md:text-xl text-white/95 max-w-3xl mx-auto leading-7 md:leading-8">
-                  Seni özlemek bende gelip geçen bir duygu olmadı. Bazen bir anıda, bazen bir şarkıda, bazen de durduk yere günün tam ortasında içime oturan bir eksiklik gibi kaldı. Çünkü ben sende sadece bir sevgili görmedim; ben sende huzuru, yakınlığı, sıcaklığı, heyecanı ve kalbime iyi gelen o eşsiz hissi gördüm.
+                  Seni özlemek bende gelip geçen bir duygu olmadı. Bazen bir anıda, bazen bir şarkıda, bazen de durduk yere günün tam ortasında içime oturan bir eksiklik gibi kaldı.
                 </p>
                 <p class="mt-3 md:mt-4 text-sm md:text-xl text-white/95 max-w-3xl mx-auto leading-7 md:leading-8 font-semibold">
-                  Ben geçmişi birebir geri getirmek istemiyorum. Ben seninle daha güzelini kurmak istiyorum. Eğer kalbinde bana dair küçücük de olsa hâlâ sıcak kalan bir yer varsa, ben o yere yeniden iyi gelmek, yeniden güven vermek ve yeniden gülümsetmek istiyorum.
+                  Ben geçmişi birebir geri getirmek istemiyorum. Ben seninle daha güzelini kurmak istiyorum.
                 </p>
 
                 <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
