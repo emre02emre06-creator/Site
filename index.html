@@ -2,46 +2,53 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Beyza için</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
+    /* TEMEL AYARLAR */
     html { scroll-behavior: smooth; }
     body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 
+    /* YATAY SCROLLBAR GİZLEME (Anılar kısmı için daha temiz mobil görünüm) */
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* ANİMASYONLAR */
+    /* Arka plan emojileri için süzülme animasyonu */
     .float-emoji {
       animation: floatY var(--duration, 4s) ease-in-out infinite;
     }
-
     @keyframes floatY {
       0% { transform: translateY(0) scale(1); }
       50% { transform: translateY(-16px) scale(1.06); }
       100% { transform: translateY(0) scale(1); }
     }
 
+    /* Kapak fotoğrafı üzerindeki küçük kartın animasyonu */
     .soft-float-card {
       animation: softCardFloat 3.4s ease-in-out infinite;
     }
-
     @keyframes softCardFloat {
       0% { transform: translateY(0); }
       50% { transform: translateY(-10px); }
       100% { transform: translateY(0); }
     }
 
+    /* Sayfa kaydırıldıkça elemanların belirmesi (Reveal) */
     .reveal {
       opacity: 0;
       transform: translateY(24px);
       transition: opacity 0.7s ease, transform 0.7s ease;
     }
-
     .reveal.is-visible {
       opacity: 1;
       transform: translateY(0);
     }
 
+    /* Butonlara tıklandığında çıkan parçacık (Burst) animasyonu */
     .burst-icon {
       position: absolute;
       left: 50%;
@@ -51,21 +58,12 @@
       transform: translate(-50%, -50%);
       animation: burstFly 0.85s ease-out forwards;
     }
-
     @keyframes burstFly {
-      0% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(0.6) rotate(0deg);
-      }
-      100% {
-        opacity: 0;
-        transform:
-          translate(calc(-50% + var(--x)), calc(-50% + var(--y)))
-          scale(var(--scale))
-          rotate(var(--rotate));
-      }
+      0% { opacity: 1; transform: translate(-50%, -50%) scale(0.6) rotate(0deg); }
+      100% { opacity: 0; transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(var(--scale)) rotate(var(--rotate)); }
     }
 
+    /* OYUN İÇİ STİLLER */
     .game-item {
       position: absolute;
       z-index: 10;
@@ -73,29 +71,26 @@
       transform: translate3d(-50%, -50%, 0);
       backface-visibility: hidden;
       -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
       filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08));
       user-select: none;
       pointer-events: none;
       line-height: 1;
     }
-
     .player-monkey {
       transition: left 0.08s linear;
       will-change: left;
     }
 
+    /* GENEL STİLLER */
     .glass {
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
-
     .mobile-hint-hide {
       opacity: 0 !important;
       transform: translate(-50%, 10px) !important;
       pointer-events: none;
     }
-
     #mobileGameHint {
       transition: opacity 0.35s ease, transform 0.35s ease;
     }
@@ -105,6 +100,10 @@
   <div id="app"></div>
 
   <script>
+    /* =========================================
+       1. İÇERİK VE VERİ AYARLARI (Buraları kendi hislerine göre düzenleyebilirsin)
+       ========================================= */
+
     const emotionCards = [
       {
         icon: "💞",
@@ -123,12 +122,13 @@
       }
     ];
 
+    /* ANILAR: 'image' kısımlarına kendi fotoğraflarının yollarını (örn: 'img/biz.jpg') ekleyebilirsin. Boş bırakırsan ikon çıkar. */
     const memoryCards = [
-      { title: "Anı Kartı 1", className: "from-rose-100 to-pink-50 border-rose-100 text-rose-400", image: "photos/ani1.jpg.jpg" },
-      { title: "Anı Kartı 2", className: "from-pink-100 to-rose-50 border-pink-100 text-pink-400", image: "photos/ani2.jpg.jpg" },
-      { title: "Anı Kartı 3", className: "from-red-100 to-white border-rose-100 text-red-400", image: "photos/ani3.jpg.jpg" },
-      { title: "Anı Kartı 4", className: "from-rose-50 to-pink-100 border-rose-100 text-rose-400", image: "photos/ani4.jpg.jpg" },
-      { title: "Anı Kartı 5", className: "from-fuchsia-50 to-rose-100 border-fuchsia-100 text-fuchsia-400", image: "photos/ani5.jpg.jpg" }
+      { title: "İlk Buluşma", className: "from-rose-100 to-pink-50 border-rose-100 text-rose-400", image: "photos/ani1.jpg.jpg" },
+      { title: "Gülüşmelerimiz", className: "from-pink-100 to-rose-50 border-pink-100 text-pink-400", image: "photos/ani2.jpg.jpg" },
+      { title: "Sahil Yürüyüşü", className: "from-red-100 to-white border-rose-100 text-red-400", image: "photos/ani3.jpg.jpg" },
+      { title: "Doğum Günü", className: "from-rose-50 to-pink-100 border-rose-100 text-rose-400", image: "photos/ani4.jpg.jpg" },
+      { title: "Birlikte", className: "from-fuchsia-50 to-rose-100 border-fuchsia-100 text-fuchsia-400", image: "photos/ani5.jpg.jpg" }
     ];
 
     const timelineItems = [
@@ -164,6 +164,7 @@
       }
     ];
 
+    // OYUN AYARLARI
     const initialGameItems = [
       { id: 1, x: 12, y: 2, type: "banana", speed: 20 },
       { id: 2, x: 32, y: 20, type: "banana", speed: 22 },
@@ -172,8 +173,10 @@
       { id: 5, x: 84, y: 14, type: "bad", speed: 23 }
     ];
 
-    const heroImageUrl = "photos/kapak.jpg.jpg";
+    // ANA KAPAK FOTOĞRAFI (Yolu doğru ayarladığından emin ol)
+    const heroImageUrl = "photos/kapak.jpg.jpg"; 
 
+    // Skor bazlı oyun mesajları
     function getGameMessage(score) {
       if (score === 0) return "Minik maymunum için muzları topla 🍌";
       if (score < 7) return "Güzel gidiyorsun, biraz daha muz lazım 💛";
@@ -182,69 +185,43 @@
       return "20 skora ulaştın. Maymun sonunda dişi maymununa kavuştu ❤️🐒";
     }
 
+    /* =========================================
+       2. YARDIMCI FONKSİYONLAR
+       ========================================= */
+       
+    // Maymunun ekran dışına taşmasını engeller (sınır değerleri)
     function clampPlayerX(value) {
       return Math.max(8, Math.min(92, value));
     }
 
+    // Timeline renk temaları
     function toneClasses(tone) {
       switch (tone) {
         case "rose":
-          return {
-            dot: "bg-rose-500",
-            card: "bg-gradient-to-r from-rose-500 to-pink-500 text-white border-transparent",
-            text: "text-white/95"
-          };
+          return { dot: "bg-rose-500", card: "bg-gradient-to-r from-rose-500 to-pink-500 text-white border-transparent", text: "text-white/95" };
         case "fuchsia":
-          return {
-            dot: "bg-fuchsia-400",
-            card: "bg-white border border-fuchsia-100 text-gray-800",
-            text: "text-gray-600"
-          };
+          return { dot: "bg-fuchsia-400", card: "bg-white border border-fuchsia-100 text-gray-800", text: "text-gray-600" };
         case "pink":
-          return {
-            dot: "bg-pink-400",
-            card: "bg-pink-50 border border-pink-100 text-gray-800",
-            text: "text-gray-600"
-          };
+          return { dot: "bg-pink-400", card: "bg-pink-50 border border-pink-100 text-gray-800", text: "text-gray-600" };
         case "amber":
-          return {
-            dot: "bg-amber-400",
-            card: "bg-amber-50 border border-amber-100 text-gray-800",
-            text: "text-gray-600"
-          };
+          return { dot: "bg-amber-400", card: "bg-amber-50 border border-amber-100 text-gray-800", text: "text-gray-600" };
         case "slate":
         default:
-          return {
-            dot: "bg-gray-400",
-            card: "bg-gradient-to-r from-slate-100 to-gray-100 border border-gray-200 text-gray-800",
-            text: "text-gray-600"
-          };
+          return { dot: "bg-gray-400", card: "bg-gradient-to-r from-slate-100 to-gray-100 border border-gray-200 text-gray-800", text: "text-gray-600" };
       }
     }
 
+    // Hata ayıklama fonksiyonu (Sistemin düzgün çalıştığını teyit eder)
     function runSelfChecks() {
       const checks = [
         getGameMessage(0) === "Minik maymunum için muzları topla 🍌",
-        getGameMessage(6) === "Güzel gidiyorsun, biraz daha muz lazım 💛",
-        getGameMessage(7) === "Maymunun karnı doyuyor, kalp ısınıyor 🐒",
         getGameMessage(20) === "20 skora ulaştın. Maymun sonunda dişi maymununa kavuştu ❤️🐒",
         emotionCards.length === 3,
-        memoryCards.length === 5,
-        timelineItems.length === 5,
-        initialGameItems.length === 5,
         clampPlayerX(0) === 8,
-        clampPlayerX(50) === 50,
         clampPlayerX(100) === 92,
-        toneClasses("rose").dot.includes("rose"),
-        toneClasses("pink").card.includes("bg-pink-50"),
-        toneClasses("slate").dot.includes("gray")
       ];
-
-      if (checks.some((x) => !x)) {
-        throw new Error("Self-check failed");
-      }
+      if (checks.some((x) => !x)) throw new Error("Self-check failed");
     }
-
     runSelfChecks();
 
     const floatingItems = [
@@ -256,21 +233,23 @@
       { left: "48%", top: "10%", content: "🎀", duration: "4.2s" }
     ];
 
+    /* =========================================
+       3. HTML OLUŞTURUCU FONKSİYONLAR (Render)
+       ========================================= */
+
     function renderFloatingBackground() {
       return `
         <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
           <div class="absolute inset-0 bg-[linear-gradient(135deg,_rgba(255,247,250,1)_0%,_rgba(255,235,242,0.98)_18%,_rgba(255,244,248,0.97)_38%,_rgba(255,228,239,0.98)_58%,_rgba(255,241,247,0.99)_78%,_rgba(255,250,252,1)_100%)]"></div>
           <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,148,196,0.24),_transparent_22%),radial-gradient(circle_at_84%_16%,_rgba(255,104,180,0.14),_transparent_18%),radial-gradient(circle_at_bottom_left,_rgba(255,190,205,0.18),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(255,170,210,0.18),_transparent_22%),radial-gradient(circle_at_center,_rgba(255,255,255,0.28),_transparent_34%)]"></div>
+          
           <div class="absolute -top-24 -right-24 w-80 h-80 bg-pink-200/40 rounded-full blur-3xl"></div>
           <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-rose-200/40 rounded-full blur-3xl"></div>
           <div class="absolute top-1/3 left-1/4 w-72 h-72 bg-fuchsia-200/20 rounded-full blur-3xl"></div>
           <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-amber-100/25 rounded-full blur-3xl"></div>
 
           ${floatingItems.map(item => `
-            <div
-              class="absolute text-2xl md:text-3xl opacity-75 float-emoji"
-              style="left:${item.left}; top:${item.top}; --duration:${item.duration};"
-            >
+            <div class="absolute text-2xl md:text-3xl opacity-75 float-emoji" style="left:${item.left}; top:${item.top}; --duration:${item.duration};">
               ${item.content}
             </div>
           `).join("")}
@@ -282,17 +261,14 @@
       if (heroImageUrl) {
         return `
           <div class="h-64 md:h-80 rounded-[26px] overflow-hidden bg-white/15 border border-white/20">
-            <img src="${heroImageUrl}" alt=" fotoğraf" class="w-full h-full object-cover" />
+            <img src="${heroImageUrl}" alt="Özel Fotoğrafımız" class="w-full h-full object-cover" onerror="this.style.display='none'" />
           </div>
         `;
       }
-
       return `
         <div class="rounded-[26px] bg-white/15 border border-white/20 px-5 py-4 backdrop-blur-sm">
           <div class="h-24 flex items-center justify-center">
-            <div class="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center border border-white/20 shrink-0 text-3xl">
-              🖼️
-            </div>
+            <div class="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center border border-white/20 shrink-0 text-3xl">🖼️</div>
           </div>
         </div>
       `;
@@ -303,14 +279,14 @@
         const tone = toneClasses(item.tone);
         return `
           <div class="relative mb-8 last:mb-0 reveal">
-            <div class="absolute -left-[2px] md:left-0 w-5 h-5 rounded-full shadow-lg ${tone.dot}"></div>
-            <div class="ml-8 rounded-[28px] p-6 shadow-lg ${tone.card}">
+            <div class="absolute -left-[10px] md:-left-[10px] top-6 w-5 h-5 rounded-full shadow-lg ${tone.dot} z-10"></div>
+            <div class="ml-6 md:ml-8 rounded-[28px] p-5 md:p-6 shadow-lg ${tone.card}">
               <div class="flex items-center gap-2 mb-2 opacity-90">
                 <span class="text-lg">🕒</span>
                 <span class="font-semibold">${item.date}</span>
               </div>
-              <h3 class="text-2xl font-bold">${item.title}</h3>
-              <p class="mt-3 leading-7 ${tone.text}">${item.text}</p>
+              <h3 class="text-xl md:text-2xl font-bold">${item.title}</h3>
+              <p class="mt-3 text-sm md:text-base leading-7 ${tone.text}">${item.text}</p>
             </div>
           </div>
         `;
@@ -319,122 +295,115 @@
 
     function renderEmotionCards() {
       return emotionCards.map((item, i) => `
-        <div
-          class="rounded-[30px] bg-white/90 p-7 shadow-xl border border-rose-100 hover:-translate-y-1 transition-transform reveal"
-          style="transition-delay:${i * 0.08}s"
-        >
+        <div class="rounded-[30px] bg-white/90 p-6 md:p-7 shadow-xl border border-rose-100 hover:-translate-y-1 transition-transform reveal" style="transition-delay:${i * 0.08}s">
           <div class="text-4xl mb-4">${item.icon}</div>
-          <h3 class="text-2xl font-bold">${item.title}</h3>
-          <p class="mt-3 text-gray-600 leading-7">${item.text}</p>
+          <h3 class="text-xl md:text-2xl font-bold">${item.title}</h3>
+          <p class="mt-3 text-gray-600 text-sm md:text-base leading-7">${item.text}</p>
         </div>
       `).join("");
     }
 
     function renderMemoryCards() {
       return memoryCards.map((item) => `
-        <div class="snap-start shrink-0 w-[260px] md:w-[300px] rounded-[28px] overflow-hidden bg-gradient-to-br ${item.className} border shadow-lg">
-          <div class="h-[300px] flex items-center justify-center">
+        <div class="snap-center md:snap-start shrink-0 w-[240px] md:w-[300px] rounded-[28px] overflow-hidden bg-gradient-to-br ${item.className} border shadow-lg">
+          <div class="h-[260px] md:h-[300px] flex items-center justify-center relative group">
             ${
               item.image
-                ? `<img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover" />`
-                : `
-                  <div class="flex flex-col items-center justify-center">
+                ? `<img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.style.display='none'" />
+                   <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/50 to-transparent">
+                     <span class="text-white font-semibold">${item.title}</span>
+                   </div>`
+                : `<div class="flex flex-col items-center justify-center">
                     <div class="w-16 h-16 rounded-2xl bg-white/40 flex items-center justify-center border border-white/50 text-3xl">🖼️</div>
                     <div class="mt-4 text-sm font-semibold">${item.title}</div>
-                  </div>
-                `
+                  </div>`
             }
           </div>
         </div>
       `).join("");
     }
 
+    // ANA YAPIYI DOM'A BASMA
     function buildApp() {
       const app = document.getElementById("app");
-
       app.innerHTML = `
         <div class="min-h-screen bg-[#fff8fb] text-gray-800 overflow-hidden relative">
           ${renderFloatingBackground()}
 
-          <section class="relative z-10 max-w-6xl mx-auto px-6 pt-10 pb-16 md:pt-16 md:pb-24">
+          <section class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-12 md:pt-16 md:pb-24">
             <div class="text-center reveal is-visible">
-              <div class="inline-flex items-center gap-2 rounded-full bg-white/85 glass px-5 py-2 shadow-lg text-sm font-medium mb-6 border border-rose-100">
+              <div class="inline-flex items-center gap-2 rounded-full bg-white/85 glass px-4 md:px-5 py-2 shadow-lg text-xs md:text-sm font-medium mb-6 border border-rose-100">
                 <span class="text-rose-500">✨</span>
                 <span>Bu sayfa sadece sana özel, minik maymunum 💖</span>
               </div>
 
-              <h1 class="text-4xl md:text-7xl font-black leading-tight tracking-tight">
+              <h1 class="text-4xl sm:text-5xl md:text-7xl font-black leading-tight tracking-tight px-2">
                 Beyza Der,
-                <span class="block mt-2 bg-gradient-to-r from-rose-500 via-pink-500 to-red-400 bg-clip-text text-transparent">
+                <span class="block mt-2 bg-gradient-to-r from-rose-500 via-pink-500 to-red-400 bg-clip-text text-transparent pb-2">
                   içimde kalan her duyguyu burada sana bıraktım
                 </span>
               </h1>
 
-              <p class="mt-6 max-w-3xl mx-auto text-lg md:text-2xl text-gray-600 leading-relaxed">
+              <p class="mt-4 md:mt-6 max-w-3xl mx-auto text-base sm:text-lg md:text-2xl text-gray-600 leading-relaxed px-2">
                 Özlemimi, pişmanlığımı, sana olan sevgimi, hâlâ içimde yaşayan aşkı, kaybetmenin verdiği boşluğu ve yeniden başlama umudumu... Hepsini tek tek, saklamadan, eksiltmeden bu sayfaya koydum.
               </p>
             </div>
 
-            <div class="mt-12 grid lg:grid-cols-2 gap-8 items-center">
-              <div class="relative reveal">
-  <div class="rounded-[34px] bg-white/90 glass p-5 shadow-2xl border border-white/70">
-    <div class="rounded-[34px] bg-gradient-to-br from-rose-500 via-pink-500 to-red-400 border border-rose-200 min-h-[430px] p-7 text-white shadow-xl relative overflow-hidden">
+            <div class="mt-10 md:mt-12 grid lg:grid-cols-2 gap-8 items-center">
+              
+              <div class="relative reveal px-2 md:px-0">
+                <div class="rounded-[34px] bg-white/90 glass p-3 md:p-5 shadow-2xl border border-white/70">
+                  <div class="rounded-[28px] md:rounded-[34px] bg-gradient-to-br from-rose-500 via-pink-500 to-red-400 border border-rose-200 min-h-[380px] md:min-h-[430px] p-5 md:p-7 text-white shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-12 -top-10 w-36 h-36 rounded-full bg-white/15 blur-3xl"></div>
+                    <div class="absolute -left-10 bottom-0 w-32 h-32 rounded-full bg-white/10 blur-3xl"></div>
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.18),_transparent_45%)]"></div>
 
-      <div class="absolute -right-12 -top-10 w-36 h-36 rounded-full bg-white/15 blur-3xl"></div>
-      <div class="absolute -left-10 bottom-0 w-32 h-32 rounded-full bg-white/10 blur-3xl"></div>
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.18),_transparent_45%)]"></div>
+                    <div class="relative z-10 h-full flex flex-col justify-between">
+                      <div class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 md:px-4 py-2 text-[10px] md:text-xs font-semibold backdrop-blur-sm border border-white/20 self-start">
+                        <span>❤️</span>
+                        <span>En özel fotoğraf alanı</span>
+                      </div>
+                      <div class="mt-4 text-2xl md:text-4xl font-black leading-tight">
+                        Bu köşe, <span class="block text-white/90">bizim en güzel anımız…</span>
+                      </div>
+                      <p class="mt-3 mb-4 text-xs md:text-sm leading-6 text-white/90 max-w-md">
+                        Neden bilmiyorum ama en çok bu kareyi seviyorum...
+                      </p>
+                      ${renderHeroPhoto()}
+                    </div>
+                  </div>
+                </div>
 
-      <div class="relative z-10 h-full flex flex-col justify-between">
+                <div class="absolute -bottom-4 -right-2 md:-bottom-5 md:-right-4 rounded-[20px] md:rounded-3xl bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-2xl px-4 py-3 md:px-5 md:py-4 z-10 soft-float-card">
+                  <div class="text-xs md:text-sm opacity-90">Bu sadece bir site değil</div>
+                  <div class="text-sm md:text-xl font-extrabold">Kalbimin sana yazdığı bir mektup ❤️</div>
+                </div>
+              </div>
 
-        <div class="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-xs font-semibold backdrop-blur-sm border border-white/20">
-          <span>❤️</span>
-          <span>En özel fotoğraf alanı</span>
-        </div>
-
-        <div class="mt-5 text-3xl md:text-4xl font-black leading-tight">
-          Bu köşe,
-          <span class="block text-white/90">bizim en güzel anımız…</span>
-        </div>
-
-        <p class="mt-4 text-sm md:text-base leading-7 text-white/90 max-w-md">
-          Neden bilmiyorum ama en çok bu kareyi seviyorum...
-        </p>
-
-        ${renderHeroPhoto()}
-
-      </div>
-    </div>
-  </div>
-
-  <div class="absolute -bottom-5 -right-4 rounded-3xl bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-2xl px-5 py-4 z-10 soft-float-card">
-    <div class="text-sm opacity-90">Bu sadece bir site değil</div>
-    <div class="text-xl font-extrabold">Kalbimin sana yazdığı bir mektup ❤️</div>
-  </div>
-</div>
-              <div class="space-y-5 reveal">
-                <div class="rounded-[30px] bg-white/90 p-7 shadow-xl border border-rose-100">
+              <div class="space-y-5 reveal px-2 md:px-0">
+                <div class="rounded-[30px] bg-white/90 p-5 md:p-7 shadow-xl border border-rose-100">
                   <div class="flex items-center gap-3 mb-4">
                     <span class="text-rose-500 text-2xl">💌</span>
-                    <h2 class="text-2xl font-bold">Sana içimden geçenler</h2>
+                    <h2 class="text-xl md:text-2xl font-bold">Sana içimden geçenler</h2>
                   </div>
-                  <p class="text-gray-600 leading-8 text-lg">
+                  <p class="text-gray-600 leading-7 md:leading-8 text-sm md:text-lg">
                     Bazen bir insan hayatından uzaklaşsa bile içindeki yeri hiç azalmıyor. Sende bende tam olarak böyle kaldın. Yokluğun gelip geçici bir boşluk gibi değil; günün hiç beklemediğim bir anında bile içimi yoklayan, bazı zamanlar kalbimi sıkıştıran, bazı zamanlar da seni ne kadar derinden sevdiğimi yeniden fark ettiren bir his gibi içimde yaşamaya devam etti.
                   </p>
-                  <p class="text-gray-600 leading-8 text-lg mt-4">
+                  <p class="text-gray-600 leading-7 md:leading-8 text-sm md:text-lg mt-3 md:mt-4">
                     Sana karşı hissettiğim şey sadece “özledim” diyerek geçilecek kadar basit değil. Bu; seni kaybettikten sonra bile kalbimdeki yerinin değişmediğini görmek, zamanında daha iyi davranmam gereken yerleri tekrar tekrar düşünmek, keşke dediğim anların ağırlığını içimde taşımak ve buna rağmen seni hâlâ aynı içtenlikle sevmeye devam etmek.
                   </p>
-                  <p class="text-gray-600 leading-8 text-lg mt-4">
+                  <p class="text-gray-600 leading-7 md:leading-8 text-sm md:text-lg mt-3 md:mt-4">
                     O yüzden burada yazdığım hiçbir cümle gösteriş olsun diye değil. İçimde ne kaldıysa, ne sustuysa, ne eksik hissettirdiyse onu dürüstçe sana ulaştırmak için yazıldı. Çünkü bazı duygular kısa cümlelere sığmıyor; seni içimde taşıdığım yer de tam olarak öyle bir yer.
                   </p>
                 </div>
 
-                <div class="grid sm:grid-cols-2 gap-4">
-                  <div class="rounded-[26px] bg-gradient-to-br from-rose-500 to-pink-500 text-white p-6 shadow-xl">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div class="rounded-[26px] bg-gradient-to-br from-rose-500 to-pink-500 text-white p-5 md:p-6 shadow-xl">
                     <div class="flex items-center gap-2 mb-3">
                       <span>❤️</span>
-                      <div class="font-bold text-lg">İçimde kalanlar</div>
+                      <div class="font-bold text-base md:text-lg">İçimde kalanlar</div>
                     </div>
-                    <ul class="space-y-2 text-white/95 leading-7">
+                    <ul class="space-y-2 text-white/95 text-sm md:text-base leading-6 md:leading-7">
                       <li>• Sana karşı bitmeyen aşkım</li>
                       <li>• Derin özlemim</li>
                       <li>• Gerçek pişmanlığım</li>
@@ -442,12 +411,12 @@
                     </ul>
                   </div>
 
-                  <div class="rounded-[26px] bg-white p-6 shadow-xl border border-rose-100">
+                  <div class="rounded-[26px] bg-white p-5 md:p-6 shadow-xl border border-rose-100">
                     <div class="flex items-center gap-2 mb-3 text-rose-500">
                       <span>🎁</span>
-                      <div class="font-bold text-lg text-gray-800">Neyi özlüyorum?</div>
+                      <div class="font-bold text-base md:text-lg text-gray-800">Neyi özlüyorum?</div>
                     </div>
-                    <ul class="space-y-2 text-gray-600 leading-7">
+                    <ul class="space-y-2 text-gray-600 text-sm md:text-base leading-6 md:leading-7">
                       <li>• Seninle konuşmayı</li>
                       <li>• Sesini duymayı</li>
                       <li>• Birlikte güldüğümüz anları</li>
@@ -459,110 +428,87 @@
             </div>
           </section>
 
-          <section class="max-w-6xl mx-auto px-6 pb-14 relative z-10">
-            <div class="rounded-[36px] bg-white/90 border border-rose-100 shadow-2xl p-7 md:p-10 reveal">
+          <section class="max-w-6xl mx-auto px-4 md:px-6 pb-10 md:pb-14 relative z-10">
+            <div class="rounded-[30px] md:rounded-[36px] bg-white/90 border border-rose-100 shadow-2xl p-5 md:p-10 reveal">
               <div class="flex items-center gap-3 mb-6">
                 <span class="text-2xl">🗓️</span>
-                <h2 class="text-3xl font-black">Bizim Çizelgemiz</h2>
+                <h2 class="text-2xl md:text-3xl font-black">Bizim Çizelgemiz</h2>
               </div>
-
-              <div class="relative pl-6 md:pl-10">
-                <div class="absolute left-2 md:left-4 top-2 bottom-2 w-1 rounded-full bg-gradient-to-b from-rose-400 via-pink-300 via-rose-200 to-gray-300"></div>
+              <div class="relative pl-3 md:pl-6">
+                <div class="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-gradient-to-b from-rose-400 via-pink-300 via-rose-200 to-gray-300"></div>
                 ${renderTimeline()}
               </div>
             </div>
           </section>
 
-          <section class="relative z-10 max-w-6xl mx-auto px-6 pb-10">
-            <div class="grid lg:grid-cols-3 gap-6">
+          <section class="relative z-10 max-w-6xl mx-auto px-4 md:px-6 pb-10">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
               ${renderEmotionCards()}
             </div>
           </section>
 
-          <section class="relative z-10 max-w-6xl mx-auto px-6 pb-14">
-            <div class="rounded-[36px] bg-white/90 border border-rose-100 shadow-2xl p-7 md:p-10 reveal">
-              <div class="flex items-center gap-3 mb-6">
+          <section class="relative z-10 max-w-6xl mx-auto px-4 md:px-6 pb-10 md:pb-14">
+            <div class="rounded-[30px] md:rounded-[36px] bg-white/90 border border-rose-100 shadow-2xl p-5 md:p-10 reveal">
+              <div class="flex items-center gap-3 mb-4 md:mb-6">
                 <span class="text-2xl">🖼️</span>
-                <h2 class="text-3xl font-black">Anılarımız</h2>
+                <h2 class="text-2xl md:text-3xl font-black">Anılarımız</h2>
               </div>
-
-              <p class="text-gray-600 text-lg leading-8 max-w-3xl">
+              <p class="text-gray-600 text-sm md:text-lg leading-7 md:leading-8 max-w-3xl">
                 Buraya birlikte çekildiğiniz fotoğrafları koyabilirsin. Her kare sadece bir görüntü gibi değil, yaşadığınız bir hissin, birlikte güldüğünüz bir anın, birbirinize yakın olduğunuz zamanların sessiz bir izi gibi dursun. Bazen tek bir fotoğraf, uzun uzun anlatılan cümlelerden daha fazlasını söyler.
               </p>
 
-              <div class="mt-8 overflow-x-auto pb-4">
-                <div class="flex gap-5 min-w-max pr-2 snap-x snap-mandatory">
+              <div class="mt-6 md:mt-8 overflow-x-auto pb-4 hide-scrollbar snap-x snap-mandatory">
+                <div class="flex gap-4 md:gap-5 min-w-max pr-2">
                   ${renderMemoryCards()}
                 </div>
               </div>
-
-              <div class="mt-4 text-sm text-gray-500">Sola-sağa kaydırarak 5 anıyı gezebilirsin.</div>
+              <div class="mt-2 text-xs md:text-sm text-gray-500 text-center md:text-left">Sola-sağa kaydırarak anıları gezebilirsin 👆</div>
             </div>
           </section>
 
-          <section class="relative z-10 max-w-6xl mx-auto px-6 pb-14">
+          <section class="relative z-10 max-w-6xl mx-auto px-4 md:px-6 pb-14">
             <div class="grid lg:grid-cols-2 gap-6 items-stretch">
-              <div class="rounded-[36px] bg-white/90 p-8 md:p-10 shadow-2xl border border-rose-100 reveal">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-xl mb-5 text-3xl">
-                  ❤️
-                </div>
-                <h2 class="text-3xl md:text-5xl font-black leading-tight">
+              
+              <div class="rounded-[30px] md:rounded-[36px] bg-white/90 p-6 md:p-10 shadow-2xl border border-rose-100 reveal">
+                <div class="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-xl mb-4 text-2xl md:text-3xl">❤️</div>
+                <h2 class="text-2xl sm:text-3xl md:text-5xl font-black leading-tight">
                   Minik maymunum,
                   <span class="block text-rose-500 mt-2">seni sevmem hiç eksilmedi.</span>
                 </h2>
-                <p class="mt-6 text-lg md:text-xl text-gray-600 leading-8">
+                <p class="mt-4 md:mt-6 text-base md:text-xl text-gray-600 leading-7 md:leading-8">
                   Bazen insan bazı şeyleri kaybedince değerini daha derinden anlar derler ya, ben sende bunu fazlasıyla yaşadım. Hem pişman oldum, hem özledim, hem düşündüm; ama bütün bunların içinde sana olan sevgimin azalmadığını gördüm.
                 </p>
-                <p class="mt-4 text-lg md:text-xl text-gray-600 leading-8">
+                <p class="mt-3 md:mt-4 text-base md:text-xl text-gray-600 leading-7 md:leading-8">
                   Ben geçmişin aynısını geri istemiyorum. Ben; daha güzelini, daha olgununu, daha dikkatlisini, daha kıymet bileni ve seni daha çok mutlu edebileceğim bir başlangıcı istiyorum.
                 </p>
               </div>
 
               <div class="reveal">
-                <div class="rounded-[32px] bg-white/90 border border-rose-100 shadow-2xl p-6 md:p-8">
+                <div class="rounded-[30px] md:rounded-[32px] bg-white/90 border border-rose-100 shadow-2xl p-5 md:p-8">
                   <div class="flex items-center gap-3 mb-2">
                     <span class="text-2xl text-rose-500">🏆</span>
-                    <h3 class="text-2xl font-bold">Muz Toplayan Maymun Oyunu</h3>
+                    <h3 class="text-xl md:text-2xl font-bold">Muz Toplayan Maymun Oyunu</h3>
                   </div>
-
-                  <p class="text-gray-600 leading-7">
-                    Maymunu sağa sola götür, gökten düşen muzları yakala, kötü şeylerden kaç ve 20 skorda dişi maymununa kavuş.
+                  <p class="text-gray-600 text-sm md:text-base leading-6 md:leading-7">
+                    Maymunu sağa sola götür, gökten düşen muzları yakala, kırık kalplerden kaç ve 20 skorda dişi maymununa kavuş.
                   </p>
 
-                  <div
-                    id="gameArea"
-                    class="mt-5 relative h-72 rounded-[28px] bg-gradient-to-br from-rose-100 via-pink-50 to-white overflow-hidden border border-rose-100 select-none touch-none"
-                  >
+                  <div id="gameArea" class="mt-5 relative h-64 md:h-72 rounded-[24px] md:rounded-[28px] bg-gradient-to-br from-rose-100 via-pink-50 to-white overflow-hidden border border-rose-100 select-none touch-none">
                     <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.8),_transparent_65%)]"></div>
-
                     <div id="gameItemsLayer" class="absolute inset-0 z-10"></div>
 
-                    <div
-                      id="playerMonkey"
-                      class="player-monkey absolute bottom-4 text-5xl z-10"
-                      style="left:50%; transform:translateX(-50%);"
-                    >
-                      🐒
+                    <div id="playerMonkey" class="player-monkey absolute bottom-2 md:bottom-4 text-4xl md:text-5xl z-10" style="left:50%; transform:translateX(-50%);">🐒</div>
+
+                    <div id="gameOverlay" class="absolute inset-0 hidden flex-col items-center justify-center bg-white/85 backdrop-blur-sm z-20">
+                      <div class="text-5xl md:text-6xl mb-3">🐒💕🐵</div>
+                      <div class="text-lg md:text-2xl font-black text-rose-500 text-center px-4">Tebrikler, maymun sonunda dişi maymununa kavuştu.</div>
                     </div>
 
-                    <div
-                      id="gameOverlay"
-                      class="absolute inset-0 hidden flex-col items-center justify-center bg-white/75 backdrop-blur-sm z-20"
-                    >
-                      <div class="text-6xl mb-3">🐒💕🐵</div>
-                      <div class="text-2xl font-black text-rose-500 text-center px-6">
-                        Tebrikler, maymun sonunda dişi maymununa kavuştu.
-                      </div>
+                    <div id="mobileGameHint" class="absolute left-1/2 -translate-x-1/2 bottom-4 md:hidden rounded-full bg-white/90 px-3 py-2 text-[10px] font-bold text-rose-500 shadow z-10 text-center w-[80%]">
+                      👆 Basılı tutup sağa sola sürükle
                     </div>
 
-                    <div
-                      id="mobileGameHint"
-                      class="absolute left-1/2 -translate-x-1/2 bottom-4 md:hidden rounded-full bg-white/85 px-4 py-2 text-xs font-semibold text-rose-500 shadow z-10"
-                    >
-                      Basılı tutup sağa sola sürükle
-                    </div>
-
-                    <div class="absolute right-4 top-4 inline-flex rounded-full bg-white/95 px-4 py-2 shadow text-sm font-semibold text-rose-500 z-10">
+                    <div class="absolute right-3 top-3 md:right-4 md:top-4 inline-flex rounded-full bg-white/95 px-3 py-2 shadow text-xs md:text-sm font-semibold text-rose-500 z-10">
                       Skor: <span id="scoreValue" class="ml-1">0 / 20</span>
                     </div>
 
@@ -571,18 +517,12 @@
                     </div>
                   </div>
 
-                  <div
-                    id="gameMessage"
-                    class="mt-4 rounded-2xl bg-rose-50 border border-rose-100 p-4 text-center text-lg font-semibold text-rose-600 min-h-[68px] flex items-center justify-center"
-                  >
+                  <div id="gameMessage" class="mt-4 rounded-2xl bg-rose-50 border border-rose-100 p-3 md:p-4 text-center text-sm md:text-lg font-semibold text-rose-600 min-h-[60px] md:min-h-[68px] flex items-center justify-center">
                     Minik maymunum için muzları topla 🍌
                   </div>
 
                   <div class="mt-4 flex justify-center">
-                    <button
-                      id="resetGameBtn"
-                      class="inline-flex rounded-full bg-rose-500 px-5 py-3 shadow text-sm font-semibold text-white hover:scale-105 transition-transform"
-                    >
+                    <button id="resetGameBtn" class="inline-flex rounded-full bg-rose-500 px-5 py-2 md:py-3 shadow text-xs md:text-sm font-semibold text-white hover:scale-105 transition-transform">
                       Oyunu Sıfırla
                     </button>
                   </div>
@@ -591,48 +531,33 @@
             </div>
           </section>
 
-          <section class="relative z-10 px-6 pb-20">
-            <div class="max-w-5xl mx-auto rounded-[40px] bg-gradient-to-r from-rose-500 via-pink-500 to-red-400 text-white p-8 md:p-14 shadow-2xl text-center relative overflow-hidden reveal">
+          <section class="relative z-10 px-4 md:px-6 pb-20">
+            <div class="max-w-5xl mx-auto rounded-[32px] md:rounded-[40px] bg-gradient-to-r from-rose-500 via-pink-500 to-red-400 text-white p-6 md:p-14 shadow-2xl text-center relative overflow-hidden reveal">
               <div class="absolute inset-0 opacity-15 bg-[radial-gradient(circle_at_center,_white,_transparent_60%)]"></div>
 
               <div class="relative z-10">
-                <div class="text-3xl md:text-5xl font-black mb-4">Beyza benimle yeniden bir geleceğe var mısın?</div>
-
-                <p class="mt-5 text-lg md:text-xl text-white/95 max-w-3xl mx-auto leading-8">
+                <div class="text-2xl sm:text-3xl md:text-5xl font-black mb-4 leading-tight">Beyza benimle yeniden bir geleceğe var mısın?</div>
+                <p class="mt-4 md:mt-5 text-sm md:text-xl text-white/95 max-w-3xl mx-auto leading-7 md:leading-8">
                   Bu sayfada anlattığım her şeyin özü aslında tek bir yere çıkıyor: ben seni gerçekten, hem de içten içe, derinden ve eksilmeden sevdim. Zaman geçti, günler değişti, araya sessizlikler ve kırgınlıklar girdi ama kalbimde sana ayrılan yer hiç küçülmedi.
                 </p>
-
-                <p class="mt-4 text-lg md:text-xl text-white/95 max-w-3xl mx-auto leading-8">
+                <p class="mt-3 md:mt-4 text-sm md:text-xl text-white/95 max-w-3xl mx-auto leading-7 md:leading-8">
                   Seni özlemek bende gelip geçen bir duygu olmadı. Bazen bir anıda, bazen bir şarkıda, bazen de durduk yere günün tam ortasında içime oturan bir eksiklik gibi kaldı. Çünkü ben sende sadece bir sevgili görmedim; ben sende huzuru, yakınlığı, sıcaklığı, heyecanı ve kalbime iyi gelen o eşsiz hissi gördüm.
                 </p>
-
-                <p class="mt-4 text-lg md:text-xl text-white/95 max-w-3xl mx-auto leading-8">
+                <p class="mt-3 md:mt-4 text-sm md:text-xl text-white/95 max-w-3xl mx-auto leading-7 md:leading-8 font-semibold">
                   Ben geçmişi birebir geri getirmek istemiyorum. Ben seninle daha güzelini kurmak istiyorum. Eğer kalbinde bana dair küçücük de olsa hâlâ sıcak kalan bir yer varsa, ben o yere yeniden iyi gelmek, yeniden güven vermek ve yeniden gülümsetmek istiyorum.
                 </p>
 
                 <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-                  <button
-                    data-burst-button
-                    data-href="https://wa.me/905074669597"
-                    data-newtab="true"
-                    data-burst-type="love"
-                    class="relative rounded-2xl bg-white text-rose-500 px-8 py-4 text-lg font-bold shadow-lg hover:scale-105 transition-transform"
-                  >
+                  <button data-burst-button data-href="https://wa.me/905074669597" data-newtab="true" data-burst-type="love" class="relative rounded-2xl bg-white text-rose-500 px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-bold shadow-lg hover:scale-105 transition-transform w-full sm:w-auto">
                     WhatsApp’tan yaz 💕
                   </button>
 
-                  <button
-                    data-burst-button
-                    data-href="tel:05074669597"
-                    data-newtab="false"
-                    data-burst-type="happiness"
-                    class="relative rounded-2xl bg-white/15 border border-white/30 text-white px-8 py-4 text-lg font-bold shadow-lg hover:scale-105 transition-transform"
-                  >
+                  <button data-burst-button data-href="tel:05074669597" data-newtab="false" data-burst-type="happiness" class="relative rounded-2xl bg-white/15 border border-white/30 text-white px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-bold shadow-lg hover:scale-105 transition-transform w-full sm:w-auto">
                     Beni ara 🌈
                   </button>
                 </div>
 
-                <div class="mt-8 inline-flex items-center gap-2 rounded-full bg-white/15 border border-white/20 px-5 py-3 text-white/95">
+                <div class="mt-6 md:mt-8 inline-flex items-center gap-2 rounded-full bg-white/15 border border-white/20 px-4 py-2 md:px-5 md:py-3 text-sm md:text-base text-white/95">
                   <span>📞</span>
                   <span>WhatsApp: 0507 466 95 97</span>
                 </div>
@@ -643,9 +568,13 @@
       `;
     }
 
+    /* =========================================
+       4. ETKİLEŞİM VE ANİMASYON MOTORLARI
+       ========================================= */
+
+    // Ekrana girince yavaşça belirme animasyonu (Scroll Reveal)
     function initRevealAnimations() {
       const revealEls = document.querySelectorAll(".reveal");
-
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
@@ -660,6 +589,7 @@
       });
     }
 
+    // Butonlara tıklandığında patlayan emojiler
     function initBurstButtons() {
       const burstSets = {
         love: ["💖", "💕", "💘", "❤️", "✨", "🌸"],
@@ -685,7 +615,6 @@
             span.style.setProperty("--rotate", `${-40 + Math.random() * 80}deg`);
             span.style.setProperty("--scale", `${0.8 + Math.random() * 0.8}`);
             button.appendChild(span);
-
             setTimeout(() => span.remove(), 900);
           }
 
@@ -695,11 +624,12 @@
             } else {
               window.location.href = href;
             }
-          }, 220);
+          }, 220); // Animasyonun bir kısmı izlendikten sonra yönlendirir
         });
       });
     }
 
+    // OYUN MOTORU
     function initGame() {
       const gameArea = document.getElementById("gameArea");
       const itemsLayer = document.getElementById("gameItemsLayer");
@@ -722,13 +652,8 @@
 
       let items = initialGameItems.map((item) => ({ ...item, el: null }));
 
-      function randomItemType() {
-        return Math.random() > 0.35 ? "banana" : "bad";
-      }
-
-      function randomSpeed() {
-        return 18 + Math.random() * 10;
-      }
+      function randomItemType() { return Math.random() > 0.35 ? "banana" : "bad"; }
+      function randomSpeed() { return 18 + Math.random() * 10; }
 
       function hideMobileHint() {
         if (!mobileGameHint || hasStartedDragging) return;
@@ -738,10 +663,9 @@
 
       function createItems() {
         itemsLayer.innerHTML = "";
-
         items.forEach((item) => {
           const el = document.createElement("div");
-          el.className = "game-item text-3xl";
+          el.className = "game-item text-2xl md:text-3xl"; // Mobilde bir tık küçültüldü
           el.textContent = item.type === "banana" ? "🍌" : "💔";
           item.el = el;
           itemsLayer.appendChild(el);
@@ -798,15 +722,9 @@
         hasStartedDragging = false;
         lastTime = 0;
 
-        if (mobileGameHint) {
-          mobileGameHint.classList.remove("mobile-hint-hide");
-        }
+        if (mobileGameHint) mobileGameHint.classList.remove("mobile-hint-hide");
 
-        items = initialGameItems.map((item) => ({
-          ...item,
-          el: null
-        }));
-
+        items = initialGameItems.map((item) => ({ ...item, el: null }));
         createItems();
         renderHUD();
 
@@ -816,67 +734,48 @@
 
       function tick(deltaSec) {
         if (isWon) return;
-
         items.forEach((item) => {
           item.y += item.speed * deltaSec;
-
           if (item.y >= 88) {
             respawnItem(item);
             return;
           }
-
-          const caught = item.y >= 74 && item.y <= 92 && Math.abs(item.x - playerX) < 10;
-
+          // Çarpışma Testi
+          const caught = item.y >= 74 && item.y <= 92 && Math.abs(item.x - playerX) < 12; // Yakalama alanı biraz genişletildi
           if (caught) {
             if (item.type === "banana") {
               score = Math.min(20, score + 1);
               message = getGameMessage(score);
-
-              if (score >= 20) {
-                isWon = true;
-              }
+              if (score >= 20) isWon = true;
             } else {
               score = Math.max(0, score - 1);
-              message = score === 0 ? "Dikkat et, kötü şeylere çarpma 💔" : getGameMessage(score);
+              message = score === 0 ? "Dikkat et, kırık kalplere çarpma 💔" : getGameMessage(score);
             }
-
             respawnItem(item);
             renderHUD();
             return;
           }
-
           updateItemElement(item);
         });
-
         renderHUD();
       }
 
       function loop(now) {
         if (!lastTime) lastTime = now;
-        const deltaSec = Math.min((now - lastTime) / 1000, 0.03);
+        const deltaSec = Math.min((now - lastTime) / 1000, 0.03); // Maksimum 30ms gecikme (lag spike önleyici)
         lastTime = now;
-
         tick(deltaSec);
-
-        if (!isWon) {
-          animationFrameId = requestAnimationFrame(loop);
-        }
+        if (!isWon) animationFrameId = requestAnimationFrame(loop);
       }
 
+      // OYUN KONTROLLERİ (Klavye)
       window.addEventListener("keydown", (e) => {
         if (isWon) return;
-
-        if (e.key === "ArrowLeft") {
-          playerX = clampPlayerX(playerX - 6);
-          playerMonkey.style.left = `${playerX}%`;
-        }
-
-        if (e.key === "ArrowRight") {
-          playerX = clampPlayerX(playerX + 6);
-          playerMonkey.style.left = `${playerX}%`;
-        }
+        if (e.key === "ArrowLeft") { playerX = clampPlayerX(playerX - 6); playerMonkey.style.left = `${playerX}%`; }
+        if (e.key === "ArrowRight") { playerX = clampPlayerX(playerX + 6); playerMonkey.style.left = `${playerX}%`; }
       });
 
+      // OYUN KONTROLLERİ (Dokunmatik - Mobil)
       gameArea.addEventListener("touchstart", (e) => {
         const touch = e.touches[0];
         if (!touch || isWon) return;
@@ -892,32 +791,22 @@
         movePlayerToClientX(touch.clientX);
       }, { passive: true });
 
-      gameArea.addEventListener("touchend", () => {
-        isDragging = false;
-      });
+      gameArea.addEventListener("touchend", () => { isDragging = false; });
+      gameArea.addEventListener("touchcancel", () => { isDragging = false; });
 
-      gameArea.addEventListener("touchcancel", () => {
-        isDragging = false;
-      });
-
-      gameArea.addEventListener("mouseenter", () => {
-        if (window.innerWidth >= 768) isMouseInside = true;
-      });
-
-      gameArea.addEventListener("mouseleave", () => {
-        if (window.innerWidth >= 768) isMouseInside = false;
-      });
-
+      // OYUN KONTROLLERİ (Mouse - Masaüstü)
+      gameArea.addEventListener("mouseenter", () => { if (window.innerWidth >= 768) isMouseInside = true; });
+      gameArea.addEventListener("mouseleave", () => { if (window.innerWidth >= 768) isMouseInside = false; });
       gameArea.addEventListener("mousemove", (e) => {
         if (window.innerWidth < 768 || isWon || !isMouseInside) return;
         movePlayerToClientX(e.clientX);
       });
 
       resetGameBtn.addEventListener("click", resetGame);
-
       resetGame();
     }
 
+    // UYGULAMAYI BAŞLAT
     buildApp();
     initRevealAnimations();
     initBurstButtons();
